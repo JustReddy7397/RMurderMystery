@@ -1,0 +1,10 @@
+name: RMurderMystery
+version: '${project.version}'
+main: ga.justreddy.wiki.rmurdermystery.MurderMystery
+softdepend: [ PlaceholderAPI, Multiverse-Core ]
+authors: [ JustReddy ]
+description: MurderMystery plugin
+commands:
+  murdermystery:
+    aliases:
+      - mm

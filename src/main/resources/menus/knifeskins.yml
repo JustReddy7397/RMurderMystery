@@ -1,0 +1,27 @@
+menu_name: "&aSelect Knife Skin"
+size: 27
+identifier: "knifeskins"
+items:
+  filler:
+    material: BLACK_STAINED_GLASS_PANE
+    slot: -1 # All empty slots will be filled with this
+  ironsword:
+    material: IRON_SWORD
+    displayname: "&7Iron Sword"
+    slot: 0
+    lore:
+      - "&8Click to select the"
+      - "&8Iron Sword knife skin"
+    actions:
+      - "[select_knife_skin] 0"
+      - "[close]"
+  feather:
+    material: FEATHER
+    displayname: "&7Feather"
+    slot: 1
+    lore:
+      - "&8Click to select the"
+      - "&8Feather knife skin"
+    actions:
+      - "[select_knife_skin] 1"
+      - "[close]"

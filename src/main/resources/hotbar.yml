@@ -1,0 +1,8 @@
+items:
+  '1':
+    material: EMERALD
+    displayname: "&bShop"
+    slot: 0
+    lore: []
+    actions:
+      - "[MENU] selectmenu"

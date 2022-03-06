@@ -1,0 +1,61 @@
+date: "Europe/Amsterdam"
+pattern: "dd/MM/yyyy"
+
+
+# Placeholders
+# %date% - Shows the current date
+# %map_displayname% - Shows the maps displayName
+# %map_name% - Shows the maps actual name
+# %time% - Shows the time left
+# %role% - Shows what role you are
+# %innocents% - Shows how many innocents are left
+# %players% - Shows how many players are in the game ( alive )
+# %max% - Shows the max players the game can have
+
+
+lobby:
+  title: "&b&lMurderMystery"
+  lines:
+    - "&7%date%"
+    - ""
+    - "&fPlayed: &a%RMurderMystery_gamesplayed%"
+    - "&fWon: &a%RMurderMystery_gameswon%"
+    - ""
+    - "&eplay.yourmom.sexy"
+game:
+  lobby:
+    title: "&b&lMurderMystery"
+    lines:
+      - "&7%date%"
+      - ""
+      - "&fMap: &a%map_displayname%"
+      - ""
+      - "&fPlayers: &a%players%/%max%"
+      - ""
+      - "Waiting..."
+      - ""
+      - "&eplay.yourmom.sexy"
+  waiting:
+    title: "&b&lMurderMystery"
+    lines:
+      - "&7%date%"
+      - ""
+      - "&fMap: &a%map_displayname%"
+      - ""
+      - "&fPlayers: &a%players%/%max%"
+      - ""
+      - "&fStarting in: &a%time%"
+      - ""
+  playing:
+    title: "&b&lMurderMystery"
+    lines:
+      - "&7%date%"
+      - ""
+      - "&fMap: &a%map_displayname%"
+      - ""
+      - "&fRole: %role%"
+      - ""
+      - "&fInnocents left: &a%innocents%"
+      - "&fTime left: &a%time%"
+      - ""
+      - "&eplay.yourmom.sexy"
