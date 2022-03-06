@@ -15,8 +15,10 @@ import ga.justreddy.wiki.rmurdermystery.arena.tasks.GoldTask;
 import ga.justreddy.wiki.rmurdermystery.arena.tasks.PlayingTask;
 import ga.justreddy.wiki.rmurdermystery.builder.CorpseBuilder;
 import ga.justreddy.wiki.rmurdermystery.controller.KnifeSkinsController;
+import ga.justreddy.wiki.rmurdermystery.controller.LastWordsController;
 import ga.justreddy.wiki.rmurdermystery.controller.VictoryDancesController;
 import ga.justreddy.wiki.rmurdermystery.cosmetics.KnifeSkins;
+import ga.justreddy.wiki.rmurdermystery.cosmetics.LastWords;
 import ga.justreddy.wiki.rmurdermystery.cosmetics.VictoryDances;
 import ga.justreddy.wiki.rmurdermystery.scoreboard.lib.AssembleBoard;
 import org.bukkit.Bukkit;
@@ -176,6 +178,11 @@ public class EventManager implements Listener, ChatUtil {
                     e.setCancelled(true);
                     if (arena.getGameState() != GameState.PLAYING) return;
                     if (arena.getGamePlayerType().get(gamePlayer1) == PlayerType.MURDERER) {
+                        if(arena.getGamePlayerType().get(gamePlayer) == PlayerType.DETECTIVE){
+                            for(GamePlayer gamePlayers : arena.getPlayersAlive()){
+                                gamePlayers.sendTitle("&6Bow Dropped", "&6The detective has been killed");
+                            }
+                        }
                         player.setGameMode(GameMode.SPECTATOR);
                         arena.getPlayersAlive().remove(gamePlayer);
                         arena.getGamePlayerType().replace(gamePlayer, arena.getGamePlayerType().get(gamePlayer), PlayerType.DEAD);
@@ -183,6 +190,8 @@ public class EventManager implements Listener, ChatUtil {
                         CorpseBuilder corpseBuilder = new CorpseBuilder(gamePlayer, gamePlayer.getLocation());
                         arena.getCorpseBuilders().add(corpseBuilder);
                         corpseBuilder.spawn();
+                        LastWords lastWords = LastWordsController.getLastWordsController().getByGamePlayer(gamePlayer);
+                        lastWords.spawn(gamePlayer);
                         if (arena.getPlayersAlive().size() == 1) {
                             if (arena.getWaitingTask() != null) arena.getWaitingTask().cancel();
                             arena.getGameManager().setGameState(arena, GameState.ENDING);

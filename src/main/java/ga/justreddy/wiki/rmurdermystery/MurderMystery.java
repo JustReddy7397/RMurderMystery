@@ -10,7 +10,9 @@ import ga.justreddy.wiki.rmurdermystery.builder.MongoBuilder;
 import ga.justreddy.wiki.rmurdermystery.builder.SignBuilder;
 import ga.justreddy.wiki.rmurdermystery.commands.CommandBase;
 import ga.justreddy.wiki.rmurdermystery.controller.KnifeSkinsController;
+import ga.justreddy.wiki.rmurdermystery.controller.LastWordsController;
 import ga.justreddy.wiki.rmurdermystery.controller.VictoryDancesController;
+import ga.justreddy.wiki.rmurdermystery.cosmetics.lastwords.TestWord;
 import ga.justreddy.wiki.rmurdermystery.cosmetics.victorydances.FireworkDance;
 import ga.justreddy.wiki.rmurdermystery.cosmetics.weapons.Feather;
 import ga.justreddy.wiki.rmurdermystery.cosmetics.weapons.IronSword;
@@ -24,6 +26,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import wiki.justreddy.ga.reddyutils.config.ConfigManager;
+import wiki.justreddy.ga.reddyutils.dependency.DLoader;
+import wiki.justreddy.ga.reddyutils.dependency.base.Dependency;
 import wiki.justreddy.ga.reddyutils.manager.DatabaseManager;
 
 import java.io.File;
@@ -37,6 +41,11 @@ public final class MurderMystery extends JavaPlugin implements Listener {
 
     public static boolean PAPI = false;
 
+    private static final Dependency MONGO_DEPENDENCY_DRIVER = new Dependency("mongodb-driver", "3.12.10", "org.mongodb", "mongodb-driver");
+    private static final Dependency MONGO_DEPENDENCY_DRIVER_CORE = new Dependency("mongodb-driver-core", "3.12.10", "org.mongodb", "mongodb-driver-core");
+    private static final Dependency BSON = new Dependency("BSON", "4.4.0", "org.mongodb", "bson");
+    private static final Dependency H2 = new Dependency("H2", "1.4.200", "com.h2database", "h2");
+
     private ActionManager actionManager;
     private MenuManager menuManager;
     private DatabaseManager databaseManager = null;
@@ -47,6 +56,16 @@ public final class MurderMystery extends JavaPlugin implements Listener {
     private final Map<GamePlayer, AssembleBoard> lobbyBoardMap = new HashMap<>();
 
     private boolean mongoConnected = false;
+
+    @Override
+    public void onLoad() {
+        DLoader.getInstance().onLoad(this);
+        DLoader.getInstance().load(MONGO_DEPENDENCY_DRIVER);
+        DLoader.getInstance().load(MONGO_DEPENDENCY_DRIVER_CORE);
+        DLoader.getInstance().load(BSON);
+        DLoader.getInstance().load(H2);
+
+    }
 
     @Override
     public void onEnable() {
@@ -62,9 +81,11 @@ public final class MurderMystery extends JavaPlugin implements Listener {
         KnifeSkinsController.getKnifeSkinsController().getKnifeskins().put("ironsword", new IronSword());
         KnifeSkinsController.getKnifeSkinsController().getKnifeskins().put("feather", new Feather());
         VictoryDancesController.getVictoryDancesController().getVictoryDances().put("firework", new FireworkDance());
+        LastWordsController.getLastWordsController().getLastWords().put("testing", new TestWord());
         configManager.registerFile(this, "arenalist", "data/arena_list");
         configManager.registerFile(this, "knifeskins", "menus/knifeskins");
         configManager.registerFile(this, "selectmenu", "menus/selectmenu");
+        configManager.registerFile(this, "statsmenu", "menus/statsmenu");
         configManager.registerFile(this, "scoreboard", "scoreboard");
         configManager.registerFile(this, "database", "database");
         configManager.registerFile(this, "hotbar", "hotbar");

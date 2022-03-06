@@ -9,6 +9,8 @@ import ga.justreddy.wiki.rmurdermystery.arena.events.custom.player.GamePlayerLea
 import ga.justreddy.wiki.rmurdermystery.arena.player.GamePlayer;
 import ga.justreddy.wiki.rmurdermystery.arena.tasks.WaitingTask;
 import ga.justreddy.wiki.rmurdermystery.builder.CorpseBuilder;
+import ga.justreddy.wiki.rmurdermystery.controller.LastWordsController;
+import ga.justreddy.wiki.rmurdermystery.cosmetics.LastWords;
 import ga.justreddy.wiki.rmurdermystery.scoreboard.lib.AssembleBoard;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -150,17 +152,18 @@ public class ArenaManager implements ChatUtil {
         }
         MurderMystery.getPlugin(MurderMystery.class).getLogger().log(Level.INFO, "Successfully reloaded the arena " + arena.getName());
         arena.getPlayers().forEach((Consumer<? super GamePlayer>) gamePlayer -> {
-
             final Location lobby = (Location) MurderMystery.getPlugin(MurderMystery.class).getConfig().get("mainLobby");
             gamePlayer.teleport(lobby);
             gamePlayer.getPlayer().setGameMode(GameMode.SURVIVAL);
             gamePlayer.getPlayer().getInventory().clear();
             gamePlayer.setSavedInventoryContents(gamePlayer.getSavedInventoryContents());
             gamePlayer.setSavedArmorContents(gamePlayer.getSavedArmorContents());
+            LastWordsController.getLastWordsController().getByGamePlayer(gamePlayer).remove();
         });
         arena.getPlayers().clear();
         arena.getPlayersAlive().clear();
         arena.getNoRoles().clear();
+        SignUtil.getSignUtil().update(arena.getName());
     }
 
     private Arena createArenas() {

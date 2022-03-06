@@ -9,6 +9,7 @@ public class PlayerCosmetics {
 
     private int knifeSkinSelect;
     private int victoryDanceSelect;
+    private int lastWordsSelect;
 
     private final GamePlayer gamePlayer;
 
@@ -16,6 +17,7 @@ public class PlayerCosmetics {
         this.gamePlayer = gamePlayer;
         this.knifeSkinSelect = 0;
         this.victoryDanceSelect = 0;
+        this.lastWordsSelect = 0;
     }
 
     public int getKnifeSkinSelect() {
@@ -37,4 +39,11 @@ public class PlayerCosmetics {
         return victoryDanceSelect;
     }
 
+    public int getLastWordsSelect() {
+        return lastWordsSelect;
+    }
+
+    public void setLastWordsSelect(int lastWordsSelect) {
+        this.lastWordsSelect = lastWordsSelect;
+    }
 }
