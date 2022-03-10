@@ -2,7 +2,6 @@ package ga.justreddy.wiki.rmurdermystery.cosmetics;
 
 import de.tr7zw.changeme.nbtapi.NBTEntity;
 import ga.justreddy.wiki.rmurdermystery.arena.player.GamePlayer;
-import me.clip.placeholderapi.libs.kyori.adventure.text.NBTComponent;
 import org.bukkit.entity.ArmorStand;
 
 import java.util.ArrayList;

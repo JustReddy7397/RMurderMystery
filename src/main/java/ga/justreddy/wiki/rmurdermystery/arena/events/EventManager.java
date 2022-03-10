@@ -24,7 +24,6 @@ import ga.justreddy.wiki.rmurdermystery.scoreboard.lib.AssembleBoard;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
@@ -32,21 +31,20 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.NameTagVisibility;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 import wiki.justreddy.ga.reddyutils.uitl.ChatUtil;
 
-import javax.xml.bind.annotation.XmlSchema;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Random;
 
 public class EventManager implements Listener, ChatUtil {
@@ -76,6 +74,9 @@ public class EventManager implements Listener, ChatUtil {
                 PlayerController.getPlayerController().get(e.getPlayer().getUniqueId()),
                 new AssembleBoard(e.getPlayer(), MurderMystery.getPlugin(MurderMystery.class).getLobbyBoard()));
         PlayerController.getPlayerController().get(e.getPlayer().getUniqueId()).giveItems();
+
+
+
     }
 
     @EventHandler
@@ -187,9 +188,10 @@ public class EventManager implements Listener, ChatUtil {
                         arena.getPlayersAlive().remove(gamePlayer);
                         arena.getGamePlayerType().replace(gamePlayer, arena.getGamePlayerType().get(gamePlayer), PlayerType.DEAD);
                         gamePlayer1.getLocation().getWorld().playSound(gamePlayer.getLocation(), XSound.ENTITY_PLAYER_BIG_FALL.parseSound(), 1L, 1L);
-                        CorpseBuilder corpseBuilder = new CorpseBuilder(gamePlayer, gamePlayer.getLocation());
-                        arena.getCorpseBuilders().add(corpseBuilder);
-                        corpseBuilder.spawn();
+                        for(GamePlayer gamePlayers : arena.getPlayers()){
+                            Player players = gamePlayers.getPlayer();
+                            MurderMystery.getPlugin(MurderMystery.class).getNms().spawnCorpse(arena, player, players, gamePlayer.getLocation());
+                        }
                         LastWords lastWords = LastWordsController.getLastWordsController().getByGamePlayer(gamePlayer);
                         lastWords.spawn(gamePlayer);
                         if (arena.getPlayersAlive().size() == 1) {
@@ -243,7 +245,7 @@ public class EventManager implements Listener, ChatUtil {
                         arena.getGamePlayerType().replace(gamePlayer, arena.getGamePlayerType().get(gamePlayer), PlayerType.DEAD);
                         gamePlayer1.getLocation().getWorld().playSound(gamePlayer.getLocation(), XSound.ENTITY_PLAYER_BIG_FALL.parseSound(), 1L, 1L);
                         CorpseBuilder corpseBuilder = new CorpseBuilder(gamePlayer, gamePlayer.getLocation());
-                        CorpseBuilder.getCorpseBuilders().put(arena, corpseBuilder);
+                        arena.getCorpseBuilders().add(corpseBuilder);
                         corpseBuilder.spawn();
                         for (GamePlayer gamePlayers : arena.getPlayersAlive()) {
                             VictoryDances victoryDances = VictoryDancesController.getVictoryDancesController().getById(gamePlayers.getCosmetics().getVictoryDanceSelect());

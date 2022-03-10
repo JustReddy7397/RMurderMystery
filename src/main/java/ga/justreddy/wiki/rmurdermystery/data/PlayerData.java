@@ -1,6 +1,5 @@
 package ga.justreddy.wiki.rmurdermystery.data;
 
-import com.avaje.ebean.Update;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import ga.justreddy.wiki.rmurdermystery.MurderMystery;

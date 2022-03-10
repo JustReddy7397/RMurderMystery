@@ -2,13 +2,10 @@ package ga.justreddy.wiki.rmurdermystery.arena.tasks;
 
 import ga.justreddy.wiki.rmurdermystery.arena.Arena;
 import ga.justreddy.wiki.rmurdermystery.arena.enums.GameState;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.time.chrono.JapaneseEra;
-import java.util.Locale;
 import java.util.Random;
 
 public class GoldTask extends BukkitRunnable {

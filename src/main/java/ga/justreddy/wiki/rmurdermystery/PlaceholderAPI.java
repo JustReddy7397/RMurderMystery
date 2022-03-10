@@ -4,7 +4,6 @@ import ga.justreddy.wiki.rmurdermystery.arena.player.GamePlayer;
 import ga.justreddy.wiki.rmurdermystery.arena.player.PlayerController;
 import ga.justreddy.wiki.rmurdermystery.controller.KnifeSkinsController;
 import ga.justreddy.wiki.rmurdermystery.controller.VictoryDancesController;
-import ga.justreddy.wiki.rmurdermystery.cosmetics.VictoryDances;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;

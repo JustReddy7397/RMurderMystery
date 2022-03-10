@@ -2,7 +2,6 @@ package ga.justreddy.wiki.rmurdermystery.commands.subcommands;
 
 import ga.justreddy.wiki.rmurdermystery.MurderMystery;
 import ga.justreddy.wiki.rmurdermystery.arena.ArenaManager;
-import ga.justreddy.wiki.rmurdermystery.arena.player.GamePlayer;
 import ga.justreddy.wiki.rmurdermystery.commands.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

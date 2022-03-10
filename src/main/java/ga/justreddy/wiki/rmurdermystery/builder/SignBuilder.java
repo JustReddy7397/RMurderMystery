@@ -5,7 +5,6 @@ import ga.justreddy.wiki.rmurdermystery.SignUtil;
 import ga.justreddy.wiki.rmurdermystery.arena.Arena;
 import ga.justreddy.wiki.rmurdermystery.arena.ArenaManager;
 import ga.justreddy.wiki.rmurdermystery.arena.enums.GameState;
-import ga.justreddy.wiki.rmurdermystery.arena.enums.PlayerType;
 import ga.justreddy.wiki.rmurdermystery.arena.player.GamePlayer;
 import ga.justreddy.wiki.rmurdermystery.arena.player.PlayerController;
 import org.bukkit.ChatColor;

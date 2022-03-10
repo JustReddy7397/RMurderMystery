@@ -10,17 +10,15 @@ import ga.justreddy.wiki.rmurdermystery.arena.player.GamePlayer;
 import ga.justreddy.wiki.rmurdermystery.arena.tasks.WaitingTask;
 import ga.justreddy.wiki.rmurdermystery.builder.CorpseBuilder;
 import ga.justreddy.wiki.rmurdermystery.controller.LastWordsController;
-import ga.justreddy.wiki.rmurdermystery.cosmetics.LastWords;
-import ga.justreddy.wiki.rmurdermystery.scoreboard.lib.AssembleBoard;
+import ga.justreddy.wiki.rmurdermystery.nms.versions.Corpse;
+import ga.justreddy.wiki.rmurdermystery.nms.versions.v_Minus_16.NMS;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.block.Sign;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scoreboard.NameTagVisibility;
+import org.bukkit.scoreboard.Team;
 import wiki.justreddy.ga.reddyutils.uitl.ChatUtil;
 
 import java.io.File;
@@ -71,7 +69,6 @@ public class ArenaManager implements ChatUtil {
         arena.getPlayers().add(gamePlayer);
         arena.getPlayersAlive().add(gamePlayer);
         arena.getNoRoles().add(gamePlayer);
-        MurderMystery.getPlugin(MurderMystery.class).getLobbyBoardMap().get(gamePlayer).addTeam(gamePlayer);
         Bukkit.getPluginManager().callEvent(new GamePlayerJoinEvent(gamePlayer, this, arena));
         gamePlayer.setSavedArmorContents(gamePlayer.getPlayer().getInventory().getArmorContents());
         gamePlayer.setSavedInventoryContents(gamePlayer.getPlayer().getInventory().getContents());
@@ -98,12 +95,11 @@ public class ArenaManager implements ChatUtil {
             gamePlayer.sendMessage(c("&cYou're not in a game!"));
             return;
         }
-
+        MurderMystery.getPlugin(MurderMystery.class).getNms().destroyCorpse(arena, gamePlayer.getPlayer());
         arena.getPlayers().remove(gamePlayer);
         arena.getPlayersAlive().remove(gamePlayer);
         arena.getNoRoles().remove(gamePlayer);
         SignUtil.getSignUtil().update(arena.getName());
-        MurderMystery.getPlugin(MurderMystery.class).getLobbyBoardMap().get(gamePlayer).removeEntry(gamePlayer);
         Bukkit.getPluginManager().callEvent(new GamePlayerLeaveEvent(gamePlayer, this, arena));
         if (arena.getPlayers().size() < arena.getMinPlayers() && arena.getGameState() == GameState.WAITING) {
             if (arena.getWaitingTask() != null) {
@@ -113,7 +109,6 @@ public class ArenaManager implements ChatUtil {
         }
         MurderMystery.getPlugin(MurderMystery.class).getLobbyBoardMap().get(gamePlayer).removeEntry(gamePlayer);
         gamePlayer.getPlayer().setGameMode(GameMode.SURVIVAL);
-
         final Location lobby = (Location) MurderMystery.getPlugin(MurderMystery.class).getConfig().get("mainLobby");
         gamePlayer.teleport(lobby);
         gamePlayer.giveItems();
@@ -152,18 +147,20 @@ public class ArenaManager implements ChatUtil {
         }
         MurderMystery.getPlugin(MurderMystery.class).getLogger().log(Level.INFO, "Successfully reloaded the arena " + arena.getName());
         arena.getPlayers().forEach((Consumer<? super GamePlayer>) gamePlayer -> {
+            LastWordsController.getLastWordsController().getByGamePlayer(gamePlayer).remove();
+            MurderMystery.getPlugin(MurderMystery.class).getNms().destroyCorpse(arena, gamePlayer.getPlayer());
             final Location lobby = (Location) MurderMystery.getPlugin(MurderMystery.class).getConfig().get("mainLobby");
             gamePlayer.teleport(lobby);
             gamePlayer.getPlayer().setGameMode(GameMode.SURVIVAL);
             gamePlayer.getPlayer().getInventory().clear();
             gamePlayer.setSavedInventoryContents(gamePlayer.getSavedInventoryContents());
             gamePlayer.setSavedArmorContents(gamePlayer.getSavedArmorContents());
-            LastWordsController.getLastWordsController().getByGamePlayer(gamePlayer).remove();
         });
         arena.getPlayers().clear();
         arena.getPlayersAlive().clear();
         arena.getNoRoles().clear();
         SignUtil.getSignUtil().update(arena.getName());
+
     }
 
     private Arena createArenas() {

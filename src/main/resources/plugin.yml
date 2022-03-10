@@ -1,7 +1,9 @@
 name: RMurderMystery
 version: '${project.version}'
 main: ga.justreddy.wiki.rmurdermystery.MurderMystery
-softdepend: [ PlaceholderAPI, Multiverse-Core ]
+softdepend: [ PlaceholderAPI, CorpseReborn ]
+depend:
+  - Multiverse-Core
 authors: [ JustReddy ]
 description: MurderMystery plugin
 commands:

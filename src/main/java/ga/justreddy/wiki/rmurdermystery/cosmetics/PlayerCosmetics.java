@@ -2,9 +2,6 @@ package ga.justreddy.wiki.rmurdermystery.cosmetics;
 
 import ga.justreddy.wiki.rmurdermystery.arena.player.GamePlayer;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class PlayerCosmetics {
 
     private int knifeSkinSelect;

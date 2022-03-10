@@ -5,7 +5,6 @@ import ga.justreddy.wiki.rmurdermystery.arena.Arena;
 import ga.justreddy.wiki.rmurdermystery.arena.ArenaManager;
 import ga.justreddy.wiki.rmurdermystery.arena.enums.GameState;
 import ga.justreddy.wiki.rmurdermystery.arena.enums.SignState;
-import ga.justreddy.wiki.rmurdermystery.exceptions.MissingArenaObjectsException;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;

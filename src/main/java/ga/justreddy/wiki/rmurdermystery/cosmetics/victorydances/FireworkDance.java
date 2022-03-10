@@ -15,7 +15,7 @@ public class FireworkDance extends VictoryDances {
 
 
     public FireworkDance() {
-        super("Fireworks", 0, 300, "nun");
+        super("Fireworks", 0, 300, "mm.cosmetics.dances.firework");
     }
 
     private BukkitTask bukkitTask;

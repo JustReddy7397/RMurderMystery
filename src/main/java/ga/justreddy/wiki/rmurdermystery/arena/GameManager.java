@@ -3,9 +3,6 @@ package ga.justreddy.wiki.rmurdermystery.arena;
 import ga.justreddy.wiki.rmurdermystery.MurderMystery;
 import ga.justreddy.wiki.rmurdermystery.arena.enums.GameState;
 import ga.justreddy.wiki.rmurdermystery.arena.tasks.EndingTask;
-import ga.justreddy.wiki.rmurdermystery.controller.VictoryDancesController;
-import ga.justreddy.wiki.rmurdermystery.cosmetics.VictoryDances;
-import sun.java2d.marlin.MarlinRenderingEngine;
 
 public class GameManager {
 

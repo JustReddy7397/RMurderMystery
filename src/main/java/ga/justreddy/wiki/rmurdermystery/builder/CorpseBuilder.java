@@ -1,30 +1,25 @@
 package ga.justreddy.wiki.rmurdermystery.builder;
 
+import com.cryptomorin.xseries.XMaterial;
 import com.mojang.authlib.GameProfile;
-import ga.justreddy.wiki.rmurdermystery.MurderMystery;
 import ga.justreddy.wiki.rmurdermystery.arena.Arena;
 import ga.justreddy.wiki.rmurdermystery.arena.ArenaManager;
 import ga.justreddy.wiki.rmurdermystery.arena.player.GamePlayer;
-import ga.justreddy.wiki.rmurdermystery.arena.player.PlayerController;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-
 import java.lang.reflect.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class CorpseBuilder {
-
-
 
     private final int entityID;
     private Location location;
     private final GameProfile gameprofile;
-    private static final Map<Arena, CorpseBuilder> corpseBuilders = new HashMap<>();
-    public static Map<Arena, CorpseBuilder> getCorpseBuilders() {
-        return corpseBuilders;
-    }
+
     public CorpseBuilder(GamePlayer gamePlayer, Location location) {
         entityID = (int) Math.ceil(Math.random() * 1000) + 2000;
         gameprofile = new GameProfile(UUID.randomUUID(), gamePlayer.getPlayer().getName());
@@ -239,15 +234,14 @@ public class CorpseBuilder {
             }
             for (Arena arena : ArenaManager.getArenaManager().getArenas()) {
                 for (GamePlayer gamePlayer : arena.getPlayers()) {
-                    gamePlayer.getPlayer().sendBlockChange(bedLocation, Material.BED_BLOCK, (byte) 0);
+                    gamePlayer.getPlayer().sendBlockChange(bedLocation, XMaterial.RED_BED.parseMaterial(), (byte) 0);
                 }
             }
             sendPacket(bedPacket);
-            teleport(getGround(location).add(0, 0.125, 0));
         } else {
             animation(2);
-            teleport(getGround(location).add(0, 0.125, 0));
         }
+        teleport(getGround(location).add(0, 0.125, 0));
     }
 
     public void spawn()   {

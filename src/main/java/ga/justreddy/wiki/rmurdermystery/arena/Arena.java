@@ -9,8 +9,10 @@ import ga.justreddy.wiki.rmurdermystery.arena.tasks.GoldTask;
 import ga.justreddy.wiki.rmurdermystery.arena.tasks.PlayingTask;
 import ga.justreddy.wiki.rmurdermystery.arena.tasks.WaitingTask;
 import ga.justreddy.wiki.rmurdermystery.builder.CorpseBuilder;
+import ga.justreddy.wiki.rmurdermystery.nms.NMSMethods;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.golde.bukkit.corpsereborn.nms.Corpses;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,6 +40,8 @@ public class Arena {
     public EndingTask endingTask = null;
     public GoldTask goldTask = null;
     public List<CorpseBuilder> corpseBuilders = new ArrayList<>();
+    public List<NMSMethods> methods = new ArrayList<>();
+
 
     public Arena(String name, String displayName, GameState gameState, SignState signState, Location lobbyLocation, int maxPlayers, int minPlayers){
         this.name = name;
@@ -187,6 +191,10 @@ public class Arena {
         getPlayers().forEach(gamePlayer ->  {
             gamePlayer.sendMessage(gamePlayer.c(message));
         });
+    }
+
+    public List<NMSMethods> getMethods() {
+        return methods;
     }
 
     public List<GamePlayer> getPlayersAlive() {

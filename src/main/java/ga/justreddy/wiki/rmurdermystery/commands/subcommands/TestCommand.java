@@ -1,11 +1,7 @@
 package ga.justreddy.wiki.rmurdermystery.commands.subcommands;
 
 import ga.justreddy.wiki.rmurdermystery.MurderMystery;
-import ga.justreddy.wiki.rmurdermystery.arena.player.GamePlayer;
-import ga.justreddy.wiki.rmurdermystery.arena.player.PlayerController;
 import ga.justreddy.wiki.rmurdermystery.commands.Command;
-import ga.justreddy.wiki.rmurdermystery.controller.KnifeSkinsController;
-import ga.justreddy.wiki.rmurdermystery.cosmetics.KnifeSkins;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 

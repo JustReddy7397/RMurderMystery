@@ -9,8 +9,6 @@ import ga.justreddy.wiki.rmurdermystery.commands.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Locale;
-
 public class JoinCommand extends Command {
     public JoinCommand() {
         super("join", "Join an arena", "/mm join <arena>", true, "");

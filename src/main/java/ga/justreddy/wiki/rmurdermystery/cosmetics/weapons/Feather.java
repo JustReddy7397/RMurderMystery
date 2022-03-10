@@ -7,7 +7,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class Feather extends KnifeSkins {
     public Feather() {
-        super("Feather", 1, 300, "nonexistend");
+        super("Feather", 1, 300, "mm.cosmetics.weapons.feather");
     }
 
     @Override

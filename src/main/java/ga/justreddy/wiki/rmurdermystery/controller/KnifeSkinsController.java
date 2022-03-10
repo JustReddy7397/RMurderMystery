@@ -2,7 +2,6 @@ package ga.justreddy.wiki.rmurdermystery.controller;
 
 import ga.justreddy.wiki.rmurdermystery.arena.player.GamePlayer;
 import ga.justreddy.wiki.rmurdermystery.cosmetics.KnifeSkins;
-import ga.justreddy.wiki.rmurdermystery.cosmetics.VictoryDances;
 
 import java.util.HashMap;
 import java.util.Map;

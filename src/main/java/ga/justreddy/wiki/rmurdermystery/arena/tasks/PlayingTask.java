@@ -2,7 +2,6 @@ package ga.justreddy.wiki.rmurdermystery.arena.tasks;
 
 import ga.justreddy.wiki.rmurdermystery.arena.Arena;
 import ga.justreddy.wiki.rmurdermystery.arena.enums.GameState;
-import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class PlayingTask extends BukkitRunnable {

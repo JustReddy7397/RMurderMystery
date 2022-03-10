@@ -4,7 +4,6 @@ import ga.justreddy.wiki.rmurdermystery.MurderMystery;
 import ga.justreddy.wiki.rmurdermystery.action.Action;
 import ga.justreddy.wiki.rmurdermystery.arena.player.GamePlayer;
 import ga.justreddy.wiki.rmurdermystery.controller.KnifeSkinsController;
-import ga.justreddy.wiki.rmurdermystery.controller.VictoryDancesController;
 
 public class SelectKnifeSkinAction implements Action {
 
