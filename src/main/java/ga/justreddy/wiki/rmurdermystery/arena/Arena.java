@@ -8,11 +8,9 @@ import ga.justreddy.wiki.rmurdermystery.arena.tasks.EndingTask;
 import ga.justreddy.wiki.rmurdermystery.arena.tasks.GoldTask;
 import ga.justreddy.wiki.rmurdermystery.arena.tasks.PlayingTask;
 import ga.justreddy.wiki.rmurdermystery.arena.tasks.WaitingTask;
-import ga.justreddy.wiki.rmurdermystery.builder.CorpseBuilder;
-import ga.justreddy.wiki.rmurdermystery.nms.NMSMethods;
+import ga.justreddy.wiki.rmurdermystery.corpse.logic.Corpse;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.golde.bukkit.corpsereborn.nms.Corpses;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,9 +37,7 @@ public class Arena {
     public PlayingTask playingTask = null;
     public EndingTask endingTask = null;
     public GoldTask goldTask = null;
-    public List<CorpseBuilder> corpseBuilders = new ArrayList<>();
-    public List<NMSMethods> methods = new ArrayList<>();
-
+    public final List<Corpse> corpses = new ArrayList<>();
 
     public Arena(String name, String displayName, GameState gameState, SignState signState, Location lobbyLocation, int maxPlayers, int minPlayers){
         this.name = name;
@@ -174,10 +170,6 @@ public class Arena {
         return noRoles;
     }
 
-    public List<CorpseBuilder> getCorpseBuilders() {
-        return corpseBuilders;
-    }
-
     public void sendMessage(String... message){
         for(String msg : message){
             ChatColor.translateAlternateColorCodes('&', msg);
@@ -193,8 +185,8 @@ public class Arena {
         });
     }
 
-    public List<NMSMethods> getMethods() {
-        return methods;
+    public List<Corpse> getCorpses() {
+        return corpses;
     }
 
     public List<GamePlayer> getPlayersAlive() {

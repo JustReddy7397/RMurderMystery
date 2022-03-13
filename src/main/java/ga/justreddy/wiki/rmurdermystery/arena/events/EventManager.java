@@ -13,15 +13,15 @@ import ga.justreddy.wiki.rmurdermystery.arena.player.GamePlayer;
 import ga.justreddy.wiki.rmurdermystery.arena.player.PlayerController;
 import ga.justreddy.wiki.rmurdermystery.arena.tasks.GoldTask;
 import ga.justreddy.wiki.rmurdermystery.arena.tasks.PlayingTask;
-import ga.justreddy.wiki.rmurdermystery.builder.CorpseBuilder;
 import ga.justreddy.wiki.rmurdermystery.controller.KnifeSkinsController;
 import ga.justreddy.wiki.rmurdermystery.controller.LastWordsController;
 import ga.justreddy.wiki.rmurdermystery.controller.VictoryDancesController;
+import ga.justreddy.wiki.rmurdermystery.corpse.api.CorpseAPI;
+import ga.justreddy.wiki.rmurdermystery.corpse.logic.Corpse;
 import ga.justreddy.wiki.rmurdermystery.cosmetics.KnifeSkins;
 import ga.justreddy.wiki.rmurdermystery.cosmetics.LastWords;
 import ga.justreddy.wiki.rmurdermystery.cosmetics.VictoryDances;
 import ga.justreddy.wiki.rmurdermystery.scoreboard.lib.AssembleBoard;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -39,9 +39,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scoreboard.NameTagVisibility;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.Team;
 import wiki.justreddy.ga.reddyutils.uitl.ChatUtil;
 
 import java.util.Map;
@@ -184,14 +181,12 @@ public class EventManager implements Listener, ChatUtil {
                                 gamePlayers.sendTitle("&6Bow Dropped", "&6The detective has been killed");
                             }
                         }
+                        Corpse corpse = CorpseAPI.getInstance().spawnCorpse(player, player.getLocation());
+                        arena.getCorpses().add(corpse);
                         player.setGameMode(GameMode.SPECTATOR);
                         arena.getPlayersAlive().remove(gamePlayer);
                         arena.getGamePlayerType().replace(gamePlayer, arena.getGamePlayerType().get(gamePlayer), PlayerType.DEAD);
                         gamePlayer1.getLocation().getWorld().playSound(gamePlayer.getLocation(), XSound.ENTITY_PLAYER_BIG_FALL.parseSound(), 1L, 1L);
-                        for(GamePlayer gamePlayers : arena.getPlayers()){
-                            Player players = gamePlayers.getPlayer();
-                            MurderMystery.getPlugin(MurderMystery.class).getNms().spawnCorpse(arena, player, players, gamePlayer.getLocation());
-                        }
                         LastWords lastWords = LastWordsController.getLastWordsController().getByGamePlayer(gamePlayer);
                         lastWords.spawn(gamePlayer);
                         if (arena.getPlayersAlive().size() == 1) {
@@ -231,22 +226,19 @@ public class EventManager implements Listener, ChatUtil {
                         arena.getPlayersAlive().remove(gamePlayer1);
                         arena.getGamePlayerType().replace(gamePlayer, arena.getGamePlayerType().get(gamePlayer), PlayerType.DEAD);
                         arena.getGamePlayerType().replace(gamePlayer1, arena.getGamePlayerType().get(gamePlayer1), PlayerType.DEAD);
+                        Corpse corpse = CorpseAPI.getInstance().spawnCorpse(gamePlayer.getPlayer(), gamePlayer.getPlayer().getLocation());
+                        arena.getCorpses().add(corpse);
+                        Corpse corpse2 = CorpseAPI.getInstance().spawnCorpse(gamePlayer1.getPlayer(), gamePlayer1.getPlayer().getLocation());
+                        arena.getCorpses().add(corpse2);
                         gamePlayer1.getLocation().getWorld().playSound(gamePlayer.getLocation(), XSound.ENTITY_PLAYER_SMALL_FALL.parseSound(), 1L, 1L);
-                        CorpseBuilder corpseBuilder = new CorpseBuilder(gamePlayer, gamePlayer.getLocation());
-                        corpseBuilder.spawn();
-                        CorpseBuilder corpseBuilder1 = new CorpseBuilder(gamePlayer1, gamePlayer1.getLocation());
-                        arena.getCorpseBuilders().add(corpseBuilder1);
-                        arena.getCorpseBuilders().add(corpseBuilder);
-                        corpseBuilder1.spawn();
                     } else if (arena.getGamePlayerType().get(gamePlayer) == PlayerType.MURDERER && (arena.getGamePlayerType().get(gamePlayer1) == PlayerType.DETECTIVE ||
                             arena.getGamePlayerType().get(gamePlayer1) == PlayerType.INNOCENT)) {
                         player.setGameMode(GameMode.SPECTATOR);
                         arena.getPlayersAlive().remove(gamePlayer);
+                        Corpse corpse = CorpseAPI.getInstance().spawnCorpse(gamePlayer.getPlayer(), gamePlayer.getPlayer().getLocation());
+                        arena.getCorpses().add(corpse);
                         arena.getGamePlayerType().replace(gamePlayer, arena.getGamePlayerType().get(gamePlayer), PlayerType.DEAD);
                         gamePlayer1.getLocation().getWorld().playSound(gamePlayer.getLocation(), XSound.ENTITY_PLAYER_BIG_FALL.parseSound(), 1L, 1L);
-                        CorpseBuilder corpseBuilder = new CorpseBuilder(gamePlayer, gamePlayer.getLocation());
-                        arena.getCorpseBuilders().add(corpseBuilder);
-                        corpseBuilder.spawn();
                         for (GamePlayer gamePlayers : arena.getPlayersAlive()) {
                             VictoryDances victoryDances = VictoryDancesController.getVictoryDancesController().getById(gamePlayers.getCosmetics().getVictoryDanceSelect());
                             victoryDances.start(gamePlayers);

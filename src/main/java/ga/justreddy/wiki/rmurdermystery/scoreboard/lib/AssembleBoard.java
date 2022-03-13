@@ -18,8 +18,6 @@ public class AssembleBoard {
 
     private final Assemble assemble;
 
-	private Team team;
-
     private final List<AssembleBoardEntry> entries = new ArrayList<>();
     private final List<String> identifiers = new ArrayList<>();
 
@@ -28,7 +26,7 @@ public class AssembleBoard {
     /**
      * Assemble Board.
      *
-     * @param player   that the board belongs to.
+     * @param player that the board belongs to.
      * @param assemble instance.
      */
     public AssembleBoard(Player player, Assemble assemble) {
@@ -75,17 +73,8 @@ public class AssembleBoard {
      */
     private void setup(Player player) {
         Scoreboard scoreboard = getScoreboard();
-        team = scoreboard.getTeam("nametagsaregay");
-        if (team == null) {
-            team = scoreboard.registerNewTeam("nametagsaregay");
-        }
-
-        team.setDisplayName("owowhatsthis");
-        team.setNameTagVisibility(NameTagVisibility.NEVER);
-        addTeam(PlayerController.getPlayerController().get(player.getUniqueId()));
         player.setScoreboard(scoreboard);
         getObjective();
-
 
         // Call Events if enabled.
         if (assemble.isCallEvents()) {
@@ -103,15 +92,6 @@ public class AssembleBoard {
     public AssembleBoardEntry getEntryAtPosition(int pos) {
         return pos >= this.entries.size() ? null : this.entries.get(pos);
     }
-
-	public void addTeam(GamePlayer gamePlayer){
-		team.addEntry(gamePlayer.getName());
-	}
-
-	public void removeEntry(GamePlayer gamePlayer){
-		if(!team.getEntries().contains(gamePlayer.getName())) return;
-		team.removeEntry(gamePlayer.getName());
-	}
 
     /**
      * Get the unique identifier for position in scoreboard.

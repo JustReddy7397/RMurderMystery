@@ -8,17 +8,14 @@ import ga.justreddy.wiki.rmurdermystery.arena.events.custom.player.GamePlayerJoi
 import ga.justreddy.wiki.rmurdermystery.arena.events.custom.player.GamePlayerLeaveEvent;
 import ga.justreddy.wiki.rmurdermystery.arena.player.GamePlayer;
 import ga.justreddy.wiki.rmurdermystery.arena.tasks.WaitingTask;
-import ga.justreddy.wiki.rmurdermystery.builder.CorpseBuilder;
 import ga.justreddy.wiki.rmurdermystery.controller.LastWordsController;
-import ga.justreddy.wiki.rmurdermystery.nms.versions.Corpse;
-import ga.justreddy.wiki.rmurdermystery.nms.versions.v_Minus_16.NMS;
+import ga.justreddy.wiki.rmurdermystery.corpse.api.CorpseAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.scoreboard.Team;
 import wiki.justreddy.ga.reddyutils.uitl.ChatUtil;
 
 import java.io.File;
@@ -95,7 +92,6 @@ public class ArenaManager implements ChatUtil {
             gamePlayer.sendMessage(c("&cYou're not in a game!"));
             return;
         }
-        MurderMystery.getPlugin(MurderMystery.class).getNms().destroyCorpse(arena, gamePlayer.getPlayer());
         arena.getPlayers().remove(gamePlayer);
         arena.getPlayersAlive().remove(gamePlayer);
         arena.getNoRoles().remove(gamePlayer);
@@ -107,7 +103,6 @@ public class ArenaManager implements ChatUtil {
                 arena.setGameState(GameState.LOBBY);
             }
         }
-        MurderMystery.getPlugin(MurderMystery.class).getLobbyBoardMap().get(gamePlayer).removeEntry(gamePlayer);
         gamePlayer.getPlayer().setGameMode(GameMode.SURVIVAL);
         final Location lobby = (Location) MurderMystery.getPlugin(MurderMystery.class).getConfig().get("mainLobby");
         gamePlayer.teleport(lobby);
@@ -122,7 +117,6 @@ public class ArenaManager implements ChatUtil {
     public void reloadArena(Arena arena) {
         System.out.println(arena.getPlayers().size());
 
-        arena.getCorpseBuilders().forEach(CorpseBuilder::destroy);
 
         arena.setGameState(GameState.LOBBY);
         arena.setSignState(SignState.WAITING);
@@ -148,7 +142,6 @@ public class ArenaManager implements ChatUtil {
         MurderMystery.getPlugin(MurderMystery.class).getLogger().log(Level.INFO, "Successfully reloaded the arena " + arena.getName());
         arena.getPlayers().forEach((Consumer<? super GamePlayer>) gamePlayer -> {
             LastWordsController.getLastWordsController().getByGamePlayer(gamePlayer).remove();
-            MurderMystery.getPlugin(MurderMystery.class).getNms().destroyCorpse(arena, gamePlayer.getPlayer());
             final Location lobby = (Location) MurderMystery.getPlugin(MurderMystery.class).getConfig().get("mainLobby");
             gamePlayer.teleport(lobby);
             gamePlayer.getPlayer().setGameMode(GameMode.SURVIVAL);
@@ -160,7 +153,10 @@ public class ArenaManager implements ChatUtil {
         arena.getPlayersAlive().clear();
         arena.getNoRoles().clear();
         SignUtil.getSignUtil().update(arena.getName());
-
+        arena.getCorpses().forEach(corpse -> {
+            CorpseAPI.getInstance().removeCorpse(corpse);
+        });
+        arena.getCorpses().clear();
     }
 
     private Arena createArenas() {
