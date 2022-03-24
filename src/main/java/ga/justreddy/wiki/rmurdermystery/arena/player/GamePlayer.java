@@ -137,7 +137,7 @@ public class GamePlayer implements ChatUtil {
     }
 
     public void setItem(int slot, ItemStack item){
-         player.getInventory().setItem(slot, item);
+        player.getInventory().setItem(slot, item);
     }
 
     public void sendTitle(String title, String subTitle){
@@ -151,4 +151,6 @@ public class GamePlayer implements ChatUtil {
     public PlayerCosmetics getCosmetics() {
         return playerCosmetics;
     }
+
+
 }

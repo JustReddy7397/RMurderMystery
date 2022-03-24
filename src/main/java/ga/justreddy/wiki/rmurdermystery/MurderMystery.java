@@ -22,6 +22,7 @@ import ga.justreddy.wiki.rmurdermystery.menus.MenuManager;
 import ga.justreddy.wiki.rmurdermystery.scoreboard.MurderBoard;
 import ga.justreddy.wiki.rmurdermystery.scoreboard.lib.Assemble;
 import ga.justreddy.wiki.rmurdermystery.scoreboard.lib.AssembleBoard;
+import lombok.SneakyThrows;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -29,8 +30,6 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import wiki.justreddy.ga.reddyutils.config.ConfigManager;
-import wiki.justreddy.ga.reddyutils.dependency.DLoader;
-import wiki.justreddy.ga.reddyutils.dependency.base.Dependency;
 import wiki.justreddy.ga.reddyutils.manager.DatabaseManager;
 
 import java.io.File;
@@ -47,25 +46,19 @@ public final class MurderMystery extends JavaPlugin implements Listener {
     private MenuManager menuManager;
     private DatabaseManager databaseManager = null;
     private MongoBuilder mongoBuilder = null;
-    private static final Dependency MONGO_DEPENDENCY_DRIVER = new Dependency("mongodb-driver", "3.12.10", "org.mongodb", "mongodb-driver");
-    private static final Dependency MONGO_DEPENDENCY_DRIVER_CORE = new Dependency("mongodb-driver-core", "3.12.10", "org.mongodb", "mongodb-driver-core");
-    private static final Dependency BSON = new Dependency("BSON", "4.4.0", "org.mongodb", "bson");
-    private static final Dependency H2 = new Dependency("H2", "1.4.200", "com.h2database", "h2");
-
     // Scoreboard
     private Assemble lobbyBoard;
     private final Map<GamePlayer, AssembleBoard> lobbyBoardMap = new HashMap<>();
     private boolean mongoConnected = false;
     private CorpsePool pool;
+    private final File file = new File("plugins/RMurderMystery/libs/");
 
 
+    @SneakyThrows
     @Override
     public void onLoad() {
-        DLoader.getInstance().onLoad(this);
-        DLoader.getInstance().load(MONGO_DEPENDENCY_DRIVER);
-        DLoader.getInstance().load(MONGO_DEPENDENCY_DRIVER_CORE);
-        DLoader.getInstance().load(BSON);
-        DLoader.getInstance().load(H2);
+        if(!file.exists()) file.mkdirs();
+
     }
 
     @Override

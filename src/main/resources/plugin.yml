@@ -11,3 +11,39 @@ commands:
   murdermystery:
     aliases:
       - mm
+runtime-libraries:
+  relocation-prefix: 'ga.justreddy.wiki.rmurdermystery.libs'
+  libraries-folder: 'libs'
+  libraries:
+    kotlin_common:
+      groupId: "org.jetbrains.kotlin"
+      artifactId: 'kotlin-stdlib-common'
+      version: 1.6.20-RC
+    kotlin_jdk8:
+      groupId: "org.jetbrains.kotlin"
+      artifactId: 'kotlin-stdlib-jdk8'
+      version: 1.6.20-RC
+    kotlin_stdlib:
+      groupId: "org.jetbrains.kotlin"
+      artifactId: 'kotlin-stdlib'
+      version: 1.6.20-RC
+    mongo_driver:
+      groupId: "org.mongodb"
+      artifactId: "mongodb-driver"
+      version: 3.12.10
+    mongo_driver_core:
+      groupId: "org.mongodb"
+      artifactId: "mongodb-driver-core"
+      version: 3.12.10
+    bson:
+      groupId: "org.mongodb"
+      artifactId: "bson"
+      version: 4.4.0
+    h2:
+      groupId: "com.h2database"
+      artifactId: "h2"
+      version: 1.4.200
+    xseries:
+      groupId: "com.github.cryptomorin"
+      artifactId: "XSeries"
+      version: 8.6.1

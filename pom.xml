@@ -47,6 +47,10 @@
                                     <pattern>de.tr7zw.changeme.nbtapi</pattern>
                                     <shadedPattern>ga.justreddy.wiki.libs.nbtapi</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>pluginlib</pattern>
+                                    <shadedPattern>ga.justreddy.wiki.libs.pluginlib</shadedPattern>
+                                </relocation>
                             </relocations>
                         </configuration>
                     </execution>
@@ -145,6 +149,12 @@
             <version>4.7.0</version>
         </dependency>
         <dependency>
+            <groupId>com.github.ReflxctionDev</groupId>
+            <artifactId>PluginLib</artifactId>
+            <version>1.3</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.22</version>
@@ -163,11 +173,6 @@
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
             <version>23.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.checkerframework</groupId>
-            <artifactId>checker-qual</artifactId>
-            <version>3.12.0</version>
         </dependency>
     </dependencies>
 </project>
