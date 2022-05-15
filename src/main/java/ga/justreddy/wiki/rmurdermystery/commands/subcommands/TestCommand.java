@@ -2,6 +2,7 @@ package ga.justreddy.wiki.rmurdermystery.commands.subcommands;
 
 import ga.justreddy.wiki.rmurdermystery.MurderMystery;
 import ga.justreddy.wiki.rmurdermystery.commands.Command;
+import ga.justreddy.wiki.rmurdermystery.utils.Utils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -21,9 +22,8 @@ public class TestCommand extends Command {
             List<String> a = new ArrayList<>();
             a.add("[menu] " + menuName);
             MurderMystery.getPlugin(MurderMystery.class).getActionManager().executeActions(player, a);
-
         }catch (IndexOutOfBoundsException ex){
-            player.sendMessage("/test <menuname>");
+            Utils.errorCommand(player, "You are missing arguments. /mm test <menuname>");
         }
     }
 

@@ -31,7 +31,7 @@ public class KnifeSkinsController {
     public KnifeSkins getByGamePlayer(GamePlayer gamePlayer){
         KnifeSkins c = null;
         for(KnifeSkins cosmetics : knifeskins.values()){
-            if(cosmetics.getId() == gamePlayer.getCosmetics().getVictoryDanceSelect()){
+            if(cosmetics.getId() == gamePlayer.getCosmetics().getKnifeSkinSelect()){
                 c = cosmetics;
             }
         }

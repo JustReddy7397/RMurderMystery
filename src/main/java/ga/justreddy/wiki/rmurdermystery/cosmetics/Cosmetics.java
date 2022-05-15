@@ -1,5 +1,7 @@
 package ga.justreddy.wiki.rmurdermystery.cosmetics;
 
+import org.bukkit.entity.ArmorStand;
+
 public abstract class Cosmetics {
 
     private final String name;

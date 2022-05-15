@@ -8,12 +8,11 @@ import org.bukkit.inventory.ItemStack;
 public class IronSword extends KnifeSkins {
 
     public IronSword() {
-        super("Iron Sword", 0, 0, "mm.cosmetics.weapons.ironsword");
+        super("Iron Sword", 0, 0, "mm.cosmetics.weapons.ironsword", XMaterial.IRON_SWORD);
     }
 
     @Override
     public void give(GamePlayer gamePlayer) {
-        final ItemStack itemStack = XMaterial.IRON_SWORD.parseItem();
-        gamePlayer.setItem(0, itemStack);
+        gamePlayer.setItem(0, getMaterial().parseItem());
     }
 }

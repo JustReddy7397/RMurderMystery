@@ -18,7 +18,7 @@ public class SelectKnifeSkinAction implements Action {
             gamePlayer.sendMessage("&cThere is no knife skin with that ID");
             return;
         }
-        gamePlayer.getCosmetics().setKnifeSkinSelect(Integer.parseInt(data));
         gamePlayer.sendMessage("&7Successfully selected the knifeskin: &a" + KnifeSkinsController.getKnifeSkinsController().getById(Integer.parseInt(data)).getName());
+        gamePlayer.getCosmetics().setKnifeSkinSelect(Integer.parseInt(data));
     }
 }

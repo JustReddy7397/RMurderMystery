@@ -1,5 +1,6 @@
-package ga.justreddy.wiki.rmurdermystery;
+package ga.justreddy.wiki.rmurdermystery.utils;
 
+import ga.justreddy.wiki.rmurdermystery.MurderMystery;
 import ga.justreddy.wiki.rmurdermystery.arena.Arena;
 import ga.justreddy.wiki.rmurdermystery.arena.ArenaManager;
 import org.bukkit.Bukkit;
@@ -8,9 +9,9 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import wiki.justreddy.ga.reddyutils.uitl.ChatUtil;
 
-public class SignUtil implements ChatUtil {
+import java.io.IOException;
+public class SignUtil {
 
     private static SignUtil signUtil;
 
@@ -72,13 +73,15 @@ public class SignUtil implements ChatUtil {
     }
 
     public void save() {
-        FileConfiguration config = MurderMystery.getPlugin(MurderMystery.class).getConfigManager().getFile("signs").getConfig();
+        FileConfiguration config = MurderMystery.getPlugin(MurderMystery.class).getSignsConfig().getConfig();
         config.set("signs." + getArena() + ".arena", arena);
         config.set("signs." + getArena() + ".world", world);
         config.set("signs." + getArena() + ".x", x);
         config.set("signs." + getArena() + ".y", y);
         config.set("signs." + getArena() + ".z", z);
-        MurderMystery.getPlugin(MurderMystery.class).getConfigManager().saveFile("signs");
+        try{
+            MurderMystery.getPlugin(MurderMystery.class).getSignsConfig().save();
+        }catch (IOException ignored) {}
     }
 
     public void remove() {
@@ -86,22 +89,22 @@ public class SignUtil implements ChatUtil {
     }
 
     public void updateAll(){
-        final ConfigurationSection section = MurderMystery.getPlugin(MurderMystery.class).getConfigManager().getFile("signs").getConfig().getConfigurationSection("signs");
+        final ConfigurationSection section = MurderMystery.getPlugin(MurderMystery.class).getSignsConfig().getConfig().getConfigurationSection("signs");
         for(String key : section.getKeys(false)) update(key);
     }
 
     public void update(String arenaName) {
-        final ConfigurationSection section = MurderMystery.getPlugin(MurderMystery.class).getConfigManager().getFile("signs").getConfig().getConfigurationSection("signs");
+        final ConfigurationSection section = MurderMystery.getPlugin(MurderMystery.class).getSignsConfig().getConfig().getConfigurationSection("signs");
         if(section == null || section.getKeys(false).isEmpty()) return;
-        int finalX = MurderMystery.getPlugin(MurderMystery.class).getConfigManager().getFile("signs").getConfig().getInt("signs." + arenaName + ".x");
-        int finalY = MurderMystery.getPlugin(MurderMystery.class).getConfigManager().getFile("signs").getConfig().getInt("signs." + arenaName + ".y");
-        int finalZ = MurderMystery.getPlugin(MurderMystery.class).getConfigManager().getFile("signs").getConfig().getInt("signs." + arenaName + ".z");
-        World finalWorld = Bukkit.getWorld(MurderMystery.getPlugin(MurderMystery.class).getConfigManager().getFile("signs").getConfig().getString("signs." + arenaName + ".world"));
+        int finalX = MurderMystery.getPlugin(MurderMystery.class).getSignsConfig().getConfig().getInt("signs." + arenaName + ".x");
+        int finalY = MurderMystery.getPlugin(MurderMystery.class).getSignsConfig().getConfig().getInt("signs." + arenaName + ".y");
+        int finalZ = MurderMystery.getPlugin(MurderMystery.class).getSignsConfig().getConfig().getInt("signs." + arenaName + ".z");
+        World finalWorld = Bukkit.getWorld(MurderMystery.getPlugin(MurderMystery.class).getSignsConfig().getConfig().getString("signs." + arenaName + ".world"));
         if (finalWorld != null) {
             Block block = finalWorld.getBlockAt(finalX, finalY, finalZ);
             if (block != null) {
                 final Sign sign = (Sign) block.getState();
-                if (sign.getLine(1).equalsIgnoreCase(c("Map: &7" + arenaName))) {
+                if (sign.getLine(1).equalsIgnoreCase(Utils.format("Map: &7" + arenaName))) {
                     Arena arena = ArenaManager.getArenaManager().getArena(arenaName);
                     int playerCount = arena.getPlayers().size();
                     int maxPlayers = arena.getMaxPlayers();

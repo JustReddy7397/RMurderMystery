@@ -13,7 +13,7 @@ commands:
       - mm
 runtime-libraries:
   relocation-prefix: 'ga.justreddy.wiki.rmurdermystery.libs'
-  libraries-folder: 'libs'
+  libraries-folder: 'lib'
   libraries:
     kotlin_common:
       groupId: "org.jetbrains.kotlin"
@@ -42,7 +42,7 @@ runtime-libraries:
     h2:
       groupId: "com.h2database"
       artifactId: "h2"
-      version: 1.4.200
+      version: 2.1.212
     xseries:
       groupId: "com.github.cryptomorin"
       artifactId: "XSeries"

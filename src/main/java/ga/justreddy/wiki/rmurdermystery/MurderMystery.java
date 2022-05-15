@@ -5,6 +5,7 @@ import ga.justreddy.wiki.rmurdermystery.arena.ArenaManager;
 import ga.justreddy.wiki.rmurdermystery.arena.events.EventManager;
 import ga.justreddy.wiki.rmurdermystery.arena.player.GamePlayer;
 import ga.justreddy.wiki.rmurdermystery.arena.player.PlayerController;
+import ga.justreddy.wiki.rmurdermystery.builder.DatabaseManager;
 import ga.justreddy.wiki.rmurdermystery.builder.MongoBuilder;
 import ga.justreddy.wiki.rmurdermystery.builder.SignBuilder;
 import ga.justreddy.wiki.rmurdermystery.commands.CommandBase;
@@ -14,6 +15,7 @@ import ga.justreddy.wiki.rmurdermystery.controller.VictoryDancesController;
 import ga.justreddy.wiki.rmurdermystery.corpse.logic.Corpse;
 import ga.justreddy.wiki.rmurdermystery.corpse.manager.CorpsePool;
 import ga.justreddy.wiki.rmurdermystery.cosmetics.lastwords.RageWords;
+import ga.justreddy.wiki.rmurdermystery.cosmetics.lastwords.TipWords;
 import ga.justreddy.wiki.rmurdermystery.cosmetics.victorydances.FireworkDance;
 import ga.justreddy.wiki.rmurdermystery.cosmetics.weapons.Feather;
 import ga.justreddy.wiki.rmurdermystery.cosmetics.weapons.IronSword;
@@ -22,42 +24,59 @@ import ga.justreddy.wiki.rmurdermystery.menus.MenuManager;
 import ga.justreddy.wiki.rmurdermystery.scoreboard.MurderBoard;
 import ga.justreddy.wiki.rmurdermystery.scoreboard.lib.Assemble;
 import ga.justreddy.wiki.rmurdermystery.scoreboard.lib.AssembleBoard;
+import ga.justreddy.wiki.rmurdermystery.utils.SignUtil;
+import ga.justreddy.wiki.rmurdermystery.utils.Utils;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
-import wiki.justreddy.ga.reddyutils.config.ConfigManager;
-import wiki.justreddy.ga.reddyutils.manager.DatabaseManager;
+import pluginlib.DependentJavaPlugin;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class MurderMystery extends JavaPlugin implements Listener {
+public final class MurderMystery extends DependentJavaPlugin implements Listener {
 
-    private ConfigManager configManager;
-    private CommandBase commandBase;
+    @Getter private CommandBase commandBase;
 
     public static boolean PAPI = false;
-    private ActionManager actionManager;
-    private MenuManager menuManager;
-    private DatabaseManager databaseManager = null;
-    private MongoBuilder mongoBuilder = null;
+    @Getter private ActionManager actionManager;
+    @Getter private MenuManager menuManager;
+    @Getter private DatabaseManager databaseManager = null;
+    @Getter private MongoBuilder mongoBuilder = null;
     // Scoreboard
-    private Assemble lobbyBoard;
-    private final Map<GamePlayer, AssembleBoard> lobbyBoardMap = new HashMap<>();
-    private boolean mongoConnected = false;
-    private CorpsePool pool;
+    @Getter private Assemble lobbyBoard;
+    @Getter private final Map<GamePlayer, AssembleBoard> lobbyBoardMap = new HashMap<>();
+    @Getter private boolean mongoConnected = false;
+    @Getter private CorpsePool pool;
     private final File file = new File("plugins/RMurderMystery/libs/");
 
+    // Config
+    @Getter private YamlConfig arenaListConfig;
+    @Getter private YamlConfig knifeSkinsConfig;
+    @Getter private YamlConfig selectMenuConfig;
+    @Getter private YamlConfig statsMenuConfig;
+    @Getter private YamlConfig scoreboardConfig;
+    @Getter private YamlConfig databaseConfig;
+    @Getter private YamlConfig hotbarConfig;
+    @Getter private YamlConfig signsConfig;
+
+    // Config Version
+    private final int SCOREBOARD_VERSION = 1;
+    private final int DATABASE_VERSION = 1;
+    private final int HOTBAR_VERSION = 1;
 
     @SneakyThrows
     @Override
     public void onLoad() {
-        if(!file.exists()) file.mkdirs();
+        if (!file.exists()) file.mkdirs();
 
     }
 
@@ -66,28 +85,15 @@ public final class MurderMystery extends JavaPlugin implements Listener {
         // Plugin startup logic
         getConfig().options().copyDefaults(true);
         saveDefaultConfig();
-        configManager = new ConfigManager();
-        configManager.createFolder(this);
+        if (!loadConfig()) return;
+        loadCosmetics();
         pool = CorpsePool.getInstance();
         final File dataFolder = new File("plugins/" + getDescription().getName() + "/data/arenas");
         if (!dataFolder.exists()) dataFolder.mkdirs();
         final File menuFolder = new File("plugins/" + getDescription().getName() + "/menus/");
         if (!menuFolder.exists()) menuFolder.mkdirs();
-        KnifeSkinsController.getKnifeSkinsController().getKnifeskins().put("ironsword", new IronSword());
-        KnifeSkinsController.getKnifeSkinsController().getKnifeskins().put("feather", new Feather());
-        VictoryDancesController.getVictoryDancesController().getVictoryDances().put("firework", new FireworkDance());
-        LastWordsController.getLastWordsController().getLastWords().put("testing", new RageWords());
-        configManager.registerFile(this, "arenalist", "data/arena_list");
-        configManager.registerFile(this, "knifeskins", "menus/knifeskins");
-        configManager.registerFile(this, "selectmenu", "menus/selectmenu");
-        configManager.registerFile(this, "statsmenu", "menus/statsmenu");
-        configManager.registerFile(this, "scoreboard", "scoreboard");
-        configManager.registerFile(this, "database", "database");
-        configManager.registerFile(this, "hotbar", "hotbar");
-        configManager.registerFile(this, "signs", "data/signs");
         commandBase = new CommandBase();
         getCommand("murdermystery").setExecutor(commandBase);
-        System.out.println(commandBase.getCommands().size());
         ArenaManager.getArenaManager().loadArenas();
         getServer().getPluginManager().registerEvents(new EventManager(), this);
         getServer().getPluginManager().registerEvents(new SignBuilder(), this);
@@ -100,9 +106,9 @@ public final class MurderMystery extends JavaPlugin implements Listener {
             PAPI = true;
         }
         lobbyBoard = new Assemble(this, new MurderBoard());
-        switch (getConfigManager().getFile("database").getConfig().getString("storage").toLowerCase()) {
+        switch (getDatabaseConfig().getConfig().getString("storage").toLowerCase()) {
             case "mongodb":
-                mongoBuilder = new MongoBuilder(getConfigManager().getFile("database").getConfig().getString("mongodb.uri"));
+                mongoBuilder = new MongoBuilder(getDatabaseConfig().getConfig().getString("mongodb.uri"));
                 mongoConnected = true;
                 break;
             case "sql":
@@ -112,19 +118,19 @@ public final class MurderMystery extends JavaPlugin implements Listener {
             case "mysql":
                 databaseManager = new DatabaseManager();
                 databaseManager.connectMysQL(
-                        getConfigManager().getFile("database").getConfig().getString("mysql.database"),
-                        getConfigManager().getFile("database").getConfig().getString("mysql.user"),
-                        getConfigManager().getFile("database").getConfig().getString("mysql.password"),
-                        getConfigManager().getFile("database").getConfig().getString("mysql.host"),
-                        getConfigManager().getFile("database").getConfig().getInt("mysql.port")
+                        getDatabaseConfig().getConfig().getString("mysql.database"),
+                        getDatabaseConfig().getConfig().getString("mysql.user"),
+                        getDatabaseConfig().getConfig().getString("mysql.password"),
+                        getDatabaseConfig().getConfig().getString("mysql.host"),
+                        getDatabaseConfig().getConfig().getInt("mysql.port")
                 );
                 break;
         }
 
 
-
     }
 
+    @SneakyThrows
     @Override
     public void onDisable() {
         // Plugin shutdown logic
@@ -138,60 +144,72 @@ public final class MurderMystery extends JavaPlugin implements Listener {
         menuManager.onDisable();
         SignUtil.getSignUtil().updateAll();
         Bukkit.getScheduler().cancelTasks(this);
-        for(Player player : Bukkit.getOnlinePlayers()){
+        for (Player player : Bukkit.getOnlinePlayers()) {
             getLobbyBoardMap().remove(PlayerController.getPlayerController().remove(player.getUniqueId()));
 
         }
         getLobbyBoardMap().clear();
         BukkitTask task = pool.getTickTask();
-        if(task != null) {
+        if (task != null) {
             task.cancel();
         }
-        for(Corpse c: pool.getCorpses()) {
+        for (Corpse c : pool.getCorpses()) {
             c.getSeeingPlayers()
                     .forEach(c::hide);
         }
     }
 
+    private boolean loadConfig() {
 
+        String currentlyLoading = "configuration file";
+
+        try{
+            currentlyLoading = "arena_list.yml";
+            arenaListConfig = new YamlConfig("data/" + currentlyLoading);
+            currentlyLoading = "knifeskins.yml";
+            knifeSkinsConfig = new YamlConfig("menus/" + currentlyLoading);
+            currentlyLoading = "selectmenu.yml";
+            selectMenuConfig = new YamlConfig("menus/" + currentlyLoading);
+            currentlyLoading = "statsmenu.yml";
+            statsMenuConfig = new YamlConfig("menus/" + currentlyLoading);
+            currentlyLoading = "scoreboard.yml";
+            scoreboardConfig = new YamlConfig(currentlyLoading);
+            if(scoreboardConfig.isOutdated(SCOREBOARD_VERSION)) {
+                Utils.error(null, "Outdated scoreboard.yml file.", true);
+                return false;
+            }
+            currentlyLoading = "database.yml";
+            databaseConfig = new YamlConfig(currentlyLoading);
+            if(databaseConfig.isOutdated(DATABASE_VERSION)) {
+                Utils.error(null, "Outdated database.yml file.", true);
+                return false;
+            }
+            currentlyLoading = "hotbar.yml";
+            hotbarConfig = new YamlConfig(currentlyLoading);
+            if (hotbarConfig.isOutdated(HOTBAR_VERSION)) {
+                Utils.error(null, "Outdated hotbar.yml file.", true);
+                return false;
+            }
+            currentlyLoading = "signs.yml";
+            signsConfig = new YamlConfig("data/" + currentlyLoading);
+        }catch (IOException | InvalidConfigurationException ex) {
+            Utils.error(ex, "Failed to load config: " + currentlyLoading, true);
+            return false;
+        }
+
+        return true;
+    }
+
+    private void loadCosmetics() {
+        KnifeSkinsController.getKnifeSkinsController().getKnifeskins().put("ironsword", new IronSword());
+        KnifeSkinsController.getKnifeSkinsController().getKnifeskins().put("feather", new Feather());
+        VictoryDancesController.getVictoryDancesController().getVictoryDances().put("firework", new FireworkDance());
+        LastWordsController.getLastWordsController().getLastWords().put("rage", new RageWords());
+        LastWordsController.getLastWordsController().getLastWords().put("tips", new TipWords());
+    }
 
     public PluginManager getPluginManager() {
         return Bukkit.getPluginManager();
     }
 
-    public MenuManager getMenuManager() {
-        return menuManager;
-    }
-
-    public ActionManager getActionManager() {
-        return actionManager;
-    }
-
-    public CommandBase getCommandBase() {
-        return commandBase;
-    }
-
-    public Assemble getLobbyBoard() {
-        return lobbyBoard;
-    }
-
-    public Map<GamePlayer, AssembleBoard> getLobbyBoardMap() {
-        return lobbyBoardMap;
-    }
-
-    public boolean isMongoConnected() {
-        return mongoConnected;
-    }
-
-    public MongoBuilder getMongoBuilder() {
-        return mongoBuilder;
-    }
-
-    public DatabaseManager getDatabaseManager() {
-        return databaseManager;
-    }
-
-    public ConfigManager getConfigManager() {
-        return configManager;
-    }
 }

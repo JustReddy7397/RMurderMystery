@@ -18,7 +18,7 @@ public class SelectVictoryDanceAction implements Action {
             gamePlayer.sendMessage("&cThere is no victorydance with that ID");
             return;
         }
-        gamePlayer.getCosmetics().setKnifeSkinSelect(Integer.parseInt(data));
         gamePlayer.sendMessage("&7Successfully selected the victorydance: &a" + VictoryDancesController.getVictoryDancesController().getById(Integer.parseInt(data)).getName());
+        gamePlayer.getCosmetics().setKnifeSkinSelect(Integer.parseInt(data));
     }
 }

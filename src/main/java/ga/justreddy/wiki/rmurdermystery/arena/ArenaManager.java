@@ -1,7 +1,8 @@
 package ga.justreddy.wiki.rmurdermystery.arena;
 
+import de.tr7zw.changeme.nbtapi.NBTEntity;
 import ga.justreddy.wiki.rmurdermystery.MurderMystery;
-import ga.justreddy.wiki.rmurdermystery.SignUtil;
+import ga.justreddy.wiki.rmurdermystery.utils.SignUtil;
 import ga.justreddy.wiki.rmurdermystery.arena.enums.GameState;
 import ga.justreddy.wiki.rmurdermystery.arena.enums.SignState;
 import ga.justreddy.wiki.rmurdermystery.arena.events.custom.player.GamePlayerJoinEvent;
@@ -10,20 +11,19 @@ import ga.justreddy.wiki.rmurdermystery.arena.player.GamePlayer;
 import ga.justreddy.wiki.rmurdermystery.arena.tasks.WaitingTask;
 import ga.justreddy.wiki.rmurdermystery.controller.LastWordsController;
 import ga.justreddy.wiki.rmurdermystery.corpse.api.CorpseAPI;
+import ga.justreddy.wiki.rmurdermystery.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import wiki.justreddy.ga.reddyutils.uitl.ChatUtil;
 
 import java.io.File;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.logging.Level;
 
-public class ArenaManager implements ChatUtil {
+public class ArenaManager {
 
     private static ArenaManager arenaManager;
 
@@ -52,15 +52,17 @@ public class ArenaManager implements ChatUtil {
 
     public void joinArena(GamePlayer gamePlayer, Arena arena) {
         if (arena.getPlayers().size() >= arena.getMaxPlayers()) {
-            gamePlayer.sendMessage("&cThis game is full!");
+            Utils.errorCommand(gamePlayer.getPlayer(), "This game is full");
             return;
         }
 
-        if(arena.getGameState() == GameState.PLAYING){
+        if(arena.getGameState() == GameState.PLAYING || arena.getGameState() == GameState.ENDING || arena.getGameState() == GameState.RESTARTING){
+            Utils.errorCommand(gamePlayer.getPlayer(), "This arena has already started");
             return;
         }
 
         if (isInGame(gamePlayer, arena.getName())) {
+            Utils.errorCommand(gamePlayer.getPlayer(), "You are already in a game");
             return;
         }
         arena.getPlayers().add(gamePlayer);
@@ -76,7 +78,6 @@ public class ArenaManager implements ChatUtil {
         }
         gamePlayer.getPlayer().getInventory().clear();
         gamePlayer.getPlayer().setFoodLevel(20);
-        gamePlayer.teleport(arena.getLobbyLocation());
         SignUtil.getSignUtil().update(arena.getName());
     }
 
@@ -89,7 +90,7 @@ public class ArenaManager implements ChatUtil {
         }
 
         if (arena == null || !isInGame(gamePlayer, arena.getName())) {
-            gamePlayer.sendMessage(c("&cYou're not in a game!"));
+            Utils.errorCommand(gamePlayer.getPlayer(), "You're not in a game");
             return;
         }
         arena.getPlayers().remove(gamePlayer);
@@ -105,7 +106,10 @@ public class ArenaManager implements ChatUtil {
         }
         gamePlayer.getPlayer().setGameMode(GameMode.SURVIVAL);
         final Location lobby = (Location) MurderMystery.getPlugin(MurderMystery.class).getConfig().get("mainLobby");
-        gamePlayer.teleport(lobby);
+        gamePlayer.resetNameTag();
+        Bukkit.getScheduler().runTaskLater(MurderMystery.getPlugin(MurderMystery.class), () -> {
+            gamePlayer.teleport(lobby);
+        }, 20L);
         gamePlayer.giveItems();
     }
 
@@ -115,9 +119,6 @@ public class ArenaManager implements ChatUtil {
     }
 
     public void reloadArena(Arena arena) {
-        System.out.println(arena.getPlayers().size());
-
-
         arena.setGameState(GameState.LOBBY);
         arena.setSignState(SignState.WAITING);
 
@@ -125,6 +126,28 @@ public class ArenaManager implements ChatUtil {
         if(arena.getPlayingTask() != null) arena.getPlayingTask().cancel();
         if (arena.getEndingTask() != null) arena.getEndingTask().cancel();
         if(arena.getGoldTask() != null) arena.getGoldTask().cancel();
+        for(GamePlayer gamePlayer : arena.getPlayers()) {
+            gamePlayer.resetNameTag();
+            final Location lobby = (Location) MurderMystery.getPlugin(MurderMystery.class).getConfig().get("mainLobby");
+            Bukkit.getScheduler().runTaskLater(MurderMystery.getPlugin(MurderMystery.class), () -> {
+                gamePlayer.teleport(lobby);
+            }, 20L);
+            try{
+                LastWordsController.getLastWordsController().getByGamePlayer(gamePlayer).remove();
+            }catch (NullPointerException ignored) {}
+            gamePlayer.getPlayer().setGameMode(GameMode.SURVIVAL);
+            gamePlayer.getPlayer().getInventory().clear();
+            gamePlayer.setSavedInventoryContents(gamePlayer.getSavedInventoryContents());
+            gamePlayer.setSavedArmorContents(gamePlayer.getSavedArmorContents());
+        }
+        arena.getPlayers().clear();
+        arena.getPlayersAlive().clear();
+        arena.getNoRoles().clear();
+        SignUtil.getSignUtil().update(arena.getName());
+        arena.getCorpses().forEach(corpse -> {
+            CorpseAPI.getInstance().removeCorpse(corpse);
+        });
+        arena.getCorpses().clear();
         SignUtil.getSignUtil().update(arena.getName());
         File f = new File("plugins/" + MurderMystery.getPlugin(MurderMystery.class).getDescription().getName() + "/data/arenas/" + arena.getName() + ".yml");
         FileConfiguration configuration = YamlConfiguration.loadConfiguration(f);
@@ -140,23 +163,7 @@ public class ArenaManager implements ChatUtil {
             arena.addGoldLocation(location);
         }
         MurderMystery.getPlugin(MurderMystery.class).getLogger().log(Level.INFO, "Successfully reloaded the arena " + arena.getName());
-        arena.getPlayers().forEach((Consumer<? super GamePlayer>) gamePlayer -> {
-            LastWordsController.getLastWordsController().getByGamePlayer(gamePlayer).remove();
-            final Location lobby = (Location) MurderMystery.getPlugin(MurderMystery.class).getConfig().get("mainLobby");
-            gamePlayer.teleport(lobby);
-            gamePlayer.getPlayer().setGameMode(GameMode.SURVIVAL);
-            gamePlayer.getPlayer().getInventory().clear();
-            gamePlayer.setSavedInventoryContents(gamePlayer.getSavedInventoryContents());
-            gamePlayer.setSavedArmorContents(gamePlayer.getSavedArmorContents());
-        });
-        arena.getPlayers().clear();
-        arena.getPlayersAlive().clear();
-        arena.getNoRoles().clear();
-        SignUtil.getSignUtil().update(arena.getName());
-        arena.getCorpses().forEach(corpse -> {
-            CorpseAPI.getInstance().removeCorpse(corpse);
-        });
-        arena.getCorpses().clear();
+
     }
 
     private Arena createArenas() {
@@ -190,13 +197,12 @@ public class ArenaManager implements ChatUtil {
     }
 
     public void loadArenas() {
-        if (MurderMystery.getPlugin(MurderMystery.class).getConfigManager().getFile("arenalist").getConfig().getStringList("arenas").isEmpty())
+        if (MurderMystery.getPlugin(MurderMystery.class).getArenaListConfig().getConfig().getStringList("arenas").isEmpty())
             return;
-        for (String arenaName : MurderMystery.getPlugin(MurderMystery.class).getConfigManager().getFile("arenalist").getConfig().getStringList("arenas")) {
+        for (String arenaName : MurderMystery.getPlugin(MurderMystery.class).getArenaListConfig().getConfig().getStringList("arenas")) {
             Arena a = createArenas();
-            System.out.println(a.getMaxPlayers());
-            System.out.println(a.getMinPlayers());
-            System.out.println(a.getPlayers());
+            if (a == null) continue;
+            Bukkit.getLogger().log(Level.INFO, "Loaded arena: " + a.getName());
             a.name = arenaName;
         }
         System.out.println("Loaded " + arenas.size() + " arenas");

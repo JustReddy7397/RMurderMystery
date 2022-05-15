@@ -2,23 +2,30 @@ package ga.justreddy.wiki.rmurdermystery.arena.player;
 
 import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.messages.Titles;
+import de.tr7zw.changeme.nbtapi.NBTEntity;
 import ga.justreddy.wiki.rmurdermystery.MurderMystery;
 import ga.justreddy.wiki.rmurdermystery.arena.Arena;
 import ga.justreddy.wiki.rmurdermystery.arena.enums.PlayerType;
 import ga.justreddy.wiki.rmurdermystery.builder.ItemStackBuilder;
 import ga.justreddy.wiki.rmurdermystery.cosmetics.PlayerCosmetics;
 import ga.justreddy.wiki.rmurdermystery.data.PlayerData;
+import ga.justreddy.wiki.rmurdermystery.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Bat;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import wiki.justreddy.ga.reddyutils.uitl.ChatUtil;
+import org.bukkit.scoreboard.NameTagVisibility;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 
 import java.util.UUID;
 
-public class GamePlayer implements ChatUtil {
+public class GamePlayer  {
 
     private final UUID uuid;
     private final Player player;
@@ -30,6 +37,7 @@ public class GamePlayer implements ChatUtil {
     private PlayerType playerType;
     private final PlayerCosmetics playerCosmetics;
     private boolean dead;
+    private ArmorStand nameTagHider;
 
     public GamePlayer(UUID uuid){
         this.uuid = uuid;
@@ -112,14 +120,14 @@ public class GamePlayer implements ChatUtil {
     }
 
     public void giveItems(){
-        ConfigurationSection configurationSection = MurderMystery.getPlugin(MurderMystery.class).getConfigManager().getFile("hotbar").getConfig().getConfigurationSection("items");
+        ConfigurationSection configurationSection = MurderMystery.getPlugin(MurderMystery.class).getHotbarConfig().getConfig().getConfigurationSection("items");
         if(configurationSection == null) return;
         for(String key : configurationSection.getKeys(false)){
-            ConfigurationSection section = MurderMystery.getPlugin(MurderMystery.class).getConfigManager().getFile("hotbar").getConfig().getConfigurationSection("items." + key);
+            ConfigurationSection section = MurderMystery.getPlugin(MurderMystery.class).getHotbarConfig().getConfig().getConfigurationSection("items." + key);
             ItemStackBuilder itemStackBuilder = new ItemStackBuilder(XMaterial.matchXMaterial(section.getString("material")).get().parseItem());
             if(section.getString("displayname") != null){
-                if(player == null) itemStackBuilder.withName(c(section.getString("displayname")));
-                else itemStackBuilder.withName(c(section.getString("displayname")), player);
+                if(player == null) itemStackBuilder.withName(Utils.format(section.getString("displayname")));
+                else itemStackBuilder.withName(Utils.format(section.getString("displayname")), player);
             }
 
             if (section.getStringList("lore") != null && !section.getStringList("lore").isEmpty()) {
@@ -132,8 +140,38 @@ public class GamePlayer implements ChatUtil {
         }
     }
 
+    public void hideNameTag() {
+        nameTagHider = (ArmorStand) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.ARMOR_STAND);
+        NBTEntity entity = new NBTEntity(nameTagHider);
+        entity.setInteger("Invulnerable", 1);
+        nameTagHider.setMarker(true);
+        nameTagHider.setVisible(false);
+        player.setPassenger(nameTagHider);
+
+/*        scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+        Team team = scoreboard.getTeam("nametagHide");
+        if (team == null) {
+            team = scoreboard.registerNewTeam("nametagHide");
+            team.setNameTagVisibility(NameTagVisibility.NEVER);
+        }
+        System.out.println(team + " team");
+        team.addEntry(getName());
+        System.out.println(team.getNameTagVisibility() + " nametag");
+        System.out.println(team.getEntries() + " entries");
+        System.out.println(scoreboard.getTeams() + " teams");*/
+/*        nameTagHider = player.getWorld().spawn(getLocation(), ArmorStand.class);
+        nameTagHider.setMarker(true);
+        NBTEntity entity = new NBTEntity(nameTagHider);
+        entity.setInteger("Invulnerable", 1);
+        entity.setInteger("Invisible", 1);*/
+    }
+
+    public void resetNameTag() {
+        if (nameTagHider != null) nameTagHider.remove();
+    }
+
     public void sendMessage(String message){
-        player.sendMessage(c(message));
+        player.sendMessage(Utils.format(message));
     }
 
     public void setItem(int slot, ItemStack item){
@@ -141,7 +179,7 @@ public class GamePlayer implements ChatUtil {
     }
 
     public void sendTitle(String title, String subTitle){
-        Titles.sendTitle(player, c(title), c(subTitle));
+        Titles.sendTitle(player, Utils.format(title), Utils.format(subTitle));
     }
 
     public void teleport(Location location){

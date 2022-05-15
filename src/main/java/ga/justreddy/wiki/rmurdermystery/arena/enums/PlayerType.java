@@ -1,8 +1,9 @@
 package ga.justreddy.wiki.rmurdermystery.arena.enums;
 
-import wiki.justreddy.ga.reddyutils.uitl.ChatUtil;
 
-public enum PlayerType implements ChatUtil {
+import ga.justreddy.wiki.rmurdermystery.utils.Utils;
+
+public enum PlayerType {
 
     INNOCENT("&aInnocent", "&aSurvive"),
     DETECTIVE("&bDetective", "&bKill the murderer"),
@@ -18,10 +19,10 @@ public enum PlayerType implements ChatUtil {
     }
 
     public String getName() {
-        return c(name);
+        return Utils.format(name);
     }
 
     public String getJob() {
-        return c(job);
+        return Utils.format(job);
     }
 }

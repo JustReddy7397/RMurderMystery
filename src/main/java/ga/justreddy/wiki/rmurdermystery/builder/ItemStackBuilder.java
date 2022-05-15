@@ -2,6 +2,7 @@ package ga.justreddy.wiki.rmurdermystery.builder;
 
 import com.cryptomorin.xseries.XMaterial;
 import ga.justreddy.wiki.rmurdermystery.MurderMystery;
+import ga.justreddy.wiki.rmurdermystery.utils.Utils;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -13,12 +14,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import wiki.justreddy.ga.reddyutils.uitl.ChatUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ItemStackBuilder implements ChatUtil {
+public class ItemStackBuilder {
 
     private final ItemStack ITEM_STACK;
 
@@ -87,15 +87,15 @@ public class ItemStackBuilder implements ChatUtil {
 
     public ItemStackBuilder withName(String name) {
         final ItemMeta meta = ITEM_STACK.getItemMeta();
-        meta.setDisplayName(c(name));
+        meta.setDisplayName(Utils.format(name));
         ITEM_STACK.setItemMeta(meta);
         return this;
     }
 
     public ItemStackBuilder withName(String name, Player player) {
         final ItemMeta meta = ITEM_STACK.getItemMeta();
-        if(!MurderMystery.PAPI) meta.setDisplayName(c(name));
-        else meta.setDisplayName(c(PlaceholderAPI.setPlaceholders(player, name)));
+        if(!MurderMystery.PAPI) meta.setDisplayName(Utils.format(name));
+        else meta.setDisplayName(Utils.format(PlaceholderAPI.setPlaceholders(player, name)));
         ITEM_STACK.setItemMeta(meta);
         return this;
     }
@@ -112,10 +112,10 @@ public class ItemStackBuilder implements ChatUtil {
 
     public ItemStackBuilder withLore(List<String> lore, Player player) {
         final ItemMeta meta = ITEM_STACK.getItemMeta();
-        List<String> coloredLore = new ArrayList<String>();
+        List<String> coloredLore = new ArrayList<>();
         for (String s : lore) {
             if(MurderMystery.PAPI) s = PlaceholderAPI.setPlaceholders(player, s);
-            coloredLore.add(c(s));
+            coloredLore.add(Utils.format(s));
         }
         meta.setLore(coloredLore);
         ITEM_STACK.setItemMeta(meta);
@@ -126,7 +126,7 @@ public class ItemStackBuilder implements ChatUtil {
         final ItemMeta meta = ITEM_STACK.getItemMeta();
         List<String> coloredLore = new ArrayList<String>();
         for (String s : lore) {
-            coloredLore.add(c(s));
+            coloredLore.add(Utils.format(s));
         }
         meta.setLore(coloredLore);
         ITEM_STACK.setItemMeta(meta);

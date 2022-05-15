@@ -65,6 +65,15 @@ public class PlayerData {
         return 0;
     }
 
+    public void setGamesWonMurderer() {
+        if (plugin.isMongoConnected()) {
+            Document document = plugin.getMongoBuilder().getDatabase("stats").find(new Document("UUID", gamePlayer.getUuid())).first();
+            if (document != null) {
+                plugin.getMongoBuilder().getDatabase("stats").updateOne(Filters.eq("UUID", gamePlayer.getUuid()), Updates.set("gamesWonMurderer", (getGamesWonMurderer() + 1)));
+            }
+        }
+    }
+
     public int getGamesWonDetective(){
         if(plugin.isMongoConnected()){
             Document document = plugin.getMongoBuilder().getDatabase("stats").find(new Document("UUID", gamePlayer.getUuid())).first();
@@ -75,6 +84,15 @@ public class PlayerData {
         return 0;
     }
 
+    public void setGamesWonDetective() {
+        if (plugin.isMongoConnected()) {
+            Document document = plugin.getMongoBuilder().getDatabase("stats").find(new Document("UUID", gamePlayer.getUuid())).first();
+            if (document != null) {
+                plugin.getMongoBuilder().getDatabase("stats").updateOne(Filters.eq("UUID", gamePlayer.getUuid()), Updates.set("gamesWonDetective", (getGamesWonDetective() + 1)));
+            }
+        }
+    }
+
     public int getGamesWonInnocent(){
         if(plugin.isMongoConnected()){
             Document document = plugin.getMongoBuilder().getDatabase("stats").find(new Document("UUID", gamePlayer.getUuid())).first();
@@ -83,6 +101,15 @@ public class PlayerData {
             }
         }
         return 0;
+    }
+
+    public void setGamesWonInnocent() {
+        if (plugin.isMongoConnected()) {
+            Document document = plugin.getMongoBuilder().getDatabase("stats").find(new Document("UUID", gamePlayer.getUuid())).first();
+            if (document != null) {
+                plugin.getMongoBuilder().getDatabase("stats").updateOne(Filters.eq("UUID", gamePlayer.getUuid()), Updates.set("gamesWonInnocent", (getGamesWonInnocent() + 1)));
+            }
+        }
     }
 
     public int getPlayersKilledMurderer(){

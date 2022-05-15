@@ -52,6 +52,7 @@ public class ArenaFile {
         }
         Arena arena = new Arena(name, name, GameState.LOBBY, SignState.WAITING, null, maxPlayers, 2);
         ArenaManager.getArenaManager().getSetup().put(uuid, arena);
+
     }
 
     public static void saveArena(UUID uuid) throws IOException {
@@ -77,13 +78,13 @@ public class ArenaFile {
         ArenaManager.getArenaManager().getArenas().add(arena);
     }
 
-    public static boolean deleteArena(String name){
+    public static boolean deleteArena(String name) throws IOException {
         file = new File("plugins/" + MurderMystery.getPlugin(MurderMystery.class).getDescription().getName() + "/data/arenas/" + name + ".yml");
         if(!file.exists()) return false;
         file.delete();
-        List<String> list = MurderMystery.getPlugin(MurderMystery.class).getConfigManager().getFile("arenalist").getConfig().getStringList("arenas");
+        List<String> list = MurderMystery.getPlugin(MurderMystery.class).getArenaListConfig().getConfig().getStringList("arenas");
         list.remove(file.getName());
-        MurderMystery.getPlugin(MurderMystery.class).getConfigManager().saveFile("arenalist");
+        MurderMystery.getPlugin(MurderMystery.class).getArenaListConfig().save();
         return true;
     }
 
@@ -101,7 +102,7 @@ public class ArenaFile {
         }
     }
 
-    public static void cleanUp() {
+    public static void cleanUp() throws IOException {
         File folder = new File("plugins/data/arenas");
         if(!folder.exists()) return;
         if(folder.listFiles() == null) return;
@@ -109,9 +110,9 @@ public class ArenaFile {
             config = YamlConfiguration.loadConfiguration(f);
             if(!config.getBoolean("setupDone")) {
                 f.delete();
-                List<String> list = MurderMystery.getPlugin(MurderMystery.class).getConfigManager().getFile("arenalist").getConfig().getStringList("arenas");
+                List<String> list = MurderMystery.getPlugin(MurderMystery.class).getArenaListConfig().getConfig().getStringList("arenas");
                 list.remove(f.getName());
-                MurderMystery.getPlugin(MurderMystery.class).getConfigManager().saveFile("arenalist");
+                MurderMystery.getPlugin(MurderMystery.class).getArenaListConfig().save();
             }
         }
     }

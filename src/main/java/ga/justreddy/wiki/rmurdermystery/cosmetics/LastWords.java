@@ -2,6 +2,7 @@ package ga.justreddy.wiki.rmurdermystery.cosmetics;
 
 import de.tr7zw.changeme.nbtapi.NBTEntity;
 import ga.justreddy.wiki.rmurdermystery.arena.player.GamePlayer;
+import ga.justreddy.wiki.rmurdermystery.utils.Utils;
 import org.bukkit.entity.ArmorStand;
 
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public abstract class LastWords extends Cosmetics {
         player = gamePlayer.getLocation().getWorld().spawn(gamePlayer.getLocation(), ArmorStand.class);
         NBTEntity entity = new NBTEntity(player);
         entity.setInteger("Invulnerable", 1);
-        player.setCustomName(gamePlayer.c("&6" + gamePlayer.getName() + "'s last words:"));
+        player.setCustomName(Utils.format("&6" + gamePlayer.getName() + "'s last words:"));
         player.setCustomNameVisible(true);
         player.setVisible(false);
         player.setGravity(false);
@@ -39,12 +40,13 @@ public abstract class LastWords extends Cosmetics {
         NBTEntity asd = new NBTEntity(playerLastWords);
         asd.setInteger("Invulnerable", 1);
         playerLastWords.setGravity(false);
-        playerLastWords.setCustomName(gamePlayer.c("&f&o\"" + line + "\""));
+        playerLastWords.setCustomName(Utils.format("&f&o\"" + line + "\""));
         playerLastWords.setCustomNameVisible(true);
         playerLastWords.setVisible(false);
     }
 
     public void remove(){
+        if (player == null || playerLastWords == null) return;
         player.remove();
         playerLastWords.remove();
     }

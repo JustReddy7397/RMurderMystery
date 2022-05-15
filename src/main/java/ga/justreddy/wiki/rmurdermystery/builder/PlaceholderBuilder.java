@@ -19,10 +19,10 @@ public class PlaceholderBuilder {
         if(MurderMystery.PAPI ) text = PlaceholderAPI.setPlaceholders(gamePlayer.getPlayer(), text);
 
         if(text.contains("%date%")){
-            DateTimeFormatter globalFormat = DateTimeFormatter.ofPattern(MurderMystery.getPlugin(MurderMystery.class).getConfigManager().getFile("scoreboard").getConfig().getString("pattern"));
+            DateTimeFormatter globalFormat = DateTimeFormatter.ofPattern(MurderMystery.getPlugin(MurderMystery.class).getScoreboardConfig().getConfig().getString("pattern"));
             ZonedDateTime zonedDateTime = ZonedDateTime.now();
             ZonedDateTime newTime = zonedDateTime.withZoneSameInstant(ZoneId.of(
-                    MurderMystery.getPlugin(MurderMystery.class).getConfigManager().getFile("scoreboard").getConfig().getString("date")
+                    MurderMystery.getPlugin(MurderMystery.class).getScoreboardConfig().getConfig().getString("date")
             ));
 
             text = text.replaceAll("%date%", globalFormat.format(newTime));
@@ -62,12 +62,12 @@ public class PlaceholderBuilder {
     }
 
     public static String setPlaceholders(String text, GamePlayer gamePlayer){
-        if(MurderMystery.PAPI ) text = PlaceholderAPI.setPlaceholders(gamePlayer.getPlayer(), text);
+        if(MurderMystery.PAPI) text = PlaceholderAPI.setPlaceholders(gamePlayer.getPlayer(), text);
         if(text.contains("%date%")){
-            DateTimeFormatter globalFormat = DateTimeFormatter.ofPattern(MurderMystery.getPlugin(MurderMystery.class).getConfigManager().getFile("scoreboard").getConfig().getString("pattern"));
+            DateTimeFormatter globalFormat = DateTimeFormatter.ofPattern(MurderMystery.getPlugin(MurderMystery.class).getScoreboardConfig().getConfig().getString("pattern"));
             ZonedDateTime zonedDateTime = ZonedDateTime.now();
             ZonedDateTime newTime = zonedDateTime.withZoneSameInstant(ZoneId.of(
-                    MurderMystery.getPlugin(MurderMystery.class).getConfigManager().getFile("scoreboard").getConfig().getString("date")
+                    MurderMystery.getPlugin(MurderMystery.class).getScoreboardConfig().getConfig().getString("date")
             ));
 
             text = text.replaceAll("%date%", globalFormat.format(newTime));

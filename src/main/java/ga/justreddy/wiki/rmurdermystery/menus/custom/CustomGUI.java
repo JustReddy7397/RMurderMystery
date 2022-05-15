@@ -5,14 +5,14 @@ import ga.justreddy.wiki.rmurdermystery.menus.AbstractInventory;
 import ga.justreddy.wiki.rmurdermystery.menus.InventoryBuilder;
 import ga.justreddy.wiki.rmurdermystery.menus.InventoryItem;
 import ga.justreddy.wiki.rmurdermystery.builder.ItemStackBuilder;
+import ga.justreddy.wiki.rmurdermystery.utils.Utils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.Inventory;
-import wiki.justreddy.ga.reddyutils.uitl.ChatUtil;
 
-public class CustomGUI extends AbstractInventory implements ChatUtil {
+public class CustomGUI extends AbstractInventory {
 
     private InventoryBuilder inventory;
-    private FileConfiguration config;
+    private final FileConfiguration config;
 
     public CustomGUI(MurderMystery plugin, FileConfiguration config) {
         super(plugin);
@@ -22,7 +22,7 @@ public class CustomGUI extends AbstractInventory implements ChatUtil {
     @Override
     public void onEnable() {
 
-        InventoryBuilder inventoryBuilder = new InventoryBuilder(config.getInt("size"), c(config.getString("menu_name")));
+        InventoryBuilder inventoryBuilder = new InventoryBuilder(config.getInt("size"), Utils.format(config.getString("menu_name")));
 
         if (config.contains("refresh") && config.getBoolean("refresh.enabled")) {
             setInventoryRefresh(config.getLong("refresh.rate"));
@@ -39,6 +39,8 @@ public class CustomGUI extends AbstractInventory implements ChatUtil {
                 } else {
                     inventoryItem = new InventoryItem(builder.build()).addClickAction(p -> getPlugin().getActionManager().executeActions(p, config.getStringList("items." + entry + ".actions")));
                 }
+
+                if (config.contains(getEntry(entry, "displayname"))) builder.withName(config.getString(getEntry(entry, "displayname")));
 
                 if (config.contains("items." + entry + ".slots")) {
                     for (String slot : config.getStringList("items." + entry + ".slots")) {
@@ -68,6 +70,9 @@ public class CustomGUI extends AbstractInventory implements ChatUtil {
         return inventory.getInventory();
     }
 
+    private String getEntry(String entry, String a) {
+        return "items." + entry + "." + a;
+    }
 
     public FileConfiguration getConfig() {
         return config;

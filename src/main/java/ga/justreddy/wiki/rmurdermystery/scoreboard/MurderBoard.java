@@ -16,73 +16,68 @@ import java.util.stream.Collectors;
 public class MurderBoard implements AssembleAdapter {
     @Override
     public String getTitle(Player player) {
-        GamePlayer gamePlayer = PlayerController.getPlayerController().get(player.getUniqueId());
-        if(ArenaManager.getArenaManager().getArenas().size() == 0){
-            return PlaceholderBuilder.setPlaceholders(
-                    MurderMystery.getPlugin(MurderMystery.class)
-                            .getConfigManager().getFile("scoreboard").getConfig().getString("lobby.title"),
-                    gamePlayer
-            );
-        }
-        for(Arena arena : ArenaManager.getArenaManager().getArenas()){
-            if(!arena.getPlayers().contains(gamePlayer)){
+        try {
+            GamePlayer gamePlayer = PlayerController.getPlayerController().get(player.getUniqueId());
+            if (ArenaManager.getArenaManager().getArenas().size() == 0) {
                 return PlaceholderBuilder.setPlaceholders(
-                        MurderMystery.getPlugin(MurderMystery.class)
-                                .getConfigManager().getFile("scoreboard").getConfig().getString("lobby.title"),
+                        MurderMystery.getPlugin(MurderMystery.class).getScoreboardConfig().getConfig().getString("lobby.title"),
                         gamePlayer
                 );
-            }else{
-                if(arena.getGameState() == GameState.LOBBY){
+            }
+            for (Arena arena : ArenaManager.getArenaManager().getArenas()) {
+                if (!arena.getPlayers().contains(gamePlayer)) {
                     return PlaceholderBuilder.setPlaceholders(
-                            MurderMystery.getPlugin(MurderMystery.class)
-                                    .getConfigManager().getFile("scoreboard").getConfig().getString("game.lobby.title"),
-                            arena, gamePlayer
+                            MurderMystery.getPlugin(MurderMystery.class).getScoreboardConfig().getConfig().getString("lobby.title"),
+                            gamePlayer
                     );
-                }else if(arena.getGameState() == GameState.WAITING){
-                    return PlaceholderBuilder.setPlaceholders(
-                            MurderMystery.getPlugin(MurderMystery.class)
-                                    .getConfigManager().getFile("scoreboard").getConfig().getString("game.waiting.title"),
-                            arena, gamePlayer
-                    );
-                }else{
-                    return PlaceholderBuilder.setPlaceholders(
-                            MurderMystery.getPlugin(MurderMystery.class)
-                                    .getConfigManager().getFile("scoreboard").getConfig().getString("game.playing.title"),
-                            arena, gamePlayer
-                    );
+                } else {
+                    if (arena.getGameState() == GameState.LOBBY) {
+                        return PlaceholderBuilder.setPlaceholders(
+                                MurderMystery.getPlugin(MurderMystery.class).getScoreboardConfig().getConfig().getString("game.lobby.title"),
+                                arena, gamePlayer
+                        );
+                    } else if (arena.getGameState() == GameState.WAITING) {
+                        return PlaceholderBuilder.setPlaceholders(
+                                MurderMystery.getPlugin(MurderMystery.class).getScoreboardConfig().getConfig().getString("game.waiting.title"),
+                                arena, gamePlayer
+                        );
+                    } else {
+                        return PlaceholderBuilder.setPlaceholders(
+                                MurderMystery.getPlugin(MurderMystery.class).getScoreboardConfig().getConfig().getString("game.playing.title"),
+                                arena, gamePlayer
+                        );
+                    }
                 }
             }
-        }
+        }catch(NullPointerException ignored ){}
         return null;
     }
 
     @Override
     public List<String> getLines(Player player) {
-        GamePlayer gamePlayer = PlayerController.getPlayerController().get(player.getUniqueId());
-        for(Arena arena : ArenaManager.getArenaManager().getArenas()){
-            if (!arena.getPlayers().contains(gamePlayer)) {
-                return MurderMystery.getPlugin(MurderMystery.class)
-                        .getConfigManager().getFile("scoreboard").getConfig().getStringList("lobby.lines")
-                        .stream().map(s -> PlaceholderBuilder.setPlaceholders(s, gamePlayer)).collect(Collectors.toList());
-            }else{
-                if(arena.getGameState() == GameState.LOBBY){
-                    return MurderMystery.getPlugin(MurderMystery.class)
-                            .getConfigManager().getFile("scoreboard").getConfig().getStringList("game.lobby.lines")
-                            .stream().map(s -> PlaceholderBuilder.setPlaceholders(s, arena, gamePlayer)).collect(Collectors.toList());
-
-                }else if(arena.getGameState() == GameState.WAITING){
-                    return MurderMystery.getPlugin(MurderMystery.class)
-                            .getConfigManager().getFile("scoreboard").getConfig().getStringList("game.waiting.lines")
-                            .stream().map(s -> PlaceholderBuilder.setPlaceholders(s, arena, gamePlayer)).collect(Collectors.toList());
-
+        try{
+            GamePlayer gamePlayer = PlayerController.getPlayerController().get(player.getUniqueId());
+            for(Arena arena : ArenaManager.getArenaManager().getArenas()){
+                if (!arena.getPlayers().contains(gamePlayer)) {
+                    return MurderMystery.getPlugin(MurderMystery.class).getScoreboardConfig().getConfig().getStringList("lobby.lines")
+                            .stream().map(s -> PlaceholderBuilder.setPlaceholders(s, gamePlayer)).collect(Collectors.toList());
                 }else{
-                    return MurderMystery.getPlugin(MurderMystery.class)
-                            .getConfigManager().getFile("scoreboard").getConfig().getStringList("game.playing.lines")
-                            .stream().map(s -> PlaceholderBuilder.setPlaceholders(s, arena, gamePlayer)).collect(Collectors.toList());
+                    if(arena.getGameState() == GameState.LOBBY){
+                        return MurderMystery.getPlugin(MurderMystery.class).getScoreboardConfig().getConfig().getStringList("game.lobby.lines")
+                                .stream().map(s -> PlaceholderBuilder.setPlaceholders(s, arena, gamePlayer)).collect(Collectors.toList());
 
+                    }else if(arena.getGameState() == GameState.WAITING){
+                        return MurderMystery.getPlugin(MurderMystery.class).getScoreboardConfig().getConfig().getStringList("game.waiting.lines")
+                                .stream().map(s -> PlaceholderBuilder.setPlaceholders(s, arena, gamePlayer)).collect(Collectors.toList());
+
+                    }else{
+                        return MurderMystery.getPlugin(MurderMystery.class).getScoreboardConfig().getConfig().getStringList("game.playing.lines")
+                                .stream().map(s -> PlaceholderBuilder.setPlaceholders(s, arena, gamePlayer)).collect(Collectors.toList());
+
+                    }
                 }
             }
-        }
+        }catch (NullPointerException ignored) {}
         return null;
     }
 }

@@ -1,8 +1,9 @@
 package ga.justreddy.wiki.rmurdermystery.arena.enums;
 
-import wiki.justreddy.ga.reddyutils.uitl.ChatUtil;
 
-public enum SignState implements ChatUtil {
+import ga.justreddy.wiki.rmurdermystery.utils.Utils;
+
+public enum SignState  {
 
     WAITING("&aWaiting"),
     STARTING("&6Starting"),
@@ -18,6 +19,6 @@ public enum SignState implements ChatUtil {
     }
 
     public String getIdentifier() {
-        return c(identifier);
+        return Utils.format(identifier);
     }
 }

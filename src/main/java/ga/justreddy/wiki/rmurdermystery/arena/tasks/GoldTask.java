@@ -28,7 +28,8 @@ public class GoldTask extends BukkitRunnable {
             time = 15;
             Random random = new Random();
             if(arena.getGoldLocations().size() == 0) return;
-            if(arena.getGoldLocations().get(random.nextInt(arena.getGoldLocations().size())).getWorld().getEntities().size() >= 1) return;
+            if (arena.getGoldLocations().get(random.nextInt(arena.getGoldLocations().size()))
+                    .getWorld().getNearbyEntities(arena.getGoldLocations().get(random.nextInt(arena.getGoldLocations().size())), 1, 1, 1).size() >= 1) return;
             arena.getGoldLocations().get(random.nextInt(arena.getGoldLocations().size())).getWorld().dropItemNaturally(
                     arena.getGoldLocations().get(random.nextInt(arena.getGoldLocations().size())),
                       new ItemStack(Material.GOLD_INGOT)

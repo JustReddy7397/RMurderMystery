@@ -1,3 +1,5 @@
+# DO NOT TOUCH THIS!
+config-version: 1
 # Storage types: mongodb, sql, mysql
 storage: "sql"
 
