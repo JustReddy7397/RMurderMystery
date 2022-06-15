@@ -22,12 +22,12 @@ public class ArenaCommand extends Command {
     @Override
     public void onCommand(MurderMystery plugin, Player player, String[] args) {
         switch (args[1]) {
-            case "create": runCreateCommand(player, args); break;
-            case "setlobby": runSetLobbyCommand(player, args); break;
-            case "spawn": runSpawnCommand(player, args); break;
-            case "minPlayers": runMinPlayersCommand(player, args); break;
-            case "maxPlayers": runMaxPlayersCommand(player, args); break;
-            case "save": runSaveCommand(player, args); break;
+            case "create": runCreateCommand(plugin, player, args); break;
+            case "setlobby": runSetLobbyCommand(plugin, player, args); break;
+            case "spawn": runSpawnCommand(plugin, player, args); break;
+            case "minPlayers": runMinPlayersCommand(plugin, player, args); break;
+            case "maxPlayers": runMaxPlayersCommand(plugin, player, args); break;
+            case "save": runSaveCommand(plugin, player, args); break;
             default: player.sendMessage("Placeholder Message");
         }
 
@@ -37,7 +37,7 @@ public class ArenaCommand extends Command {
     public void onCommand(MurderMystery plugin, CommandSender sender, String[] args) {
     }
 
-    private void runCreateCommand(Player player, String[] args) {
+    private void runCreateCommand(MurderMystery plugin, Player player, String[] args) {
         try{
             final String arenaName = args[2];
 
@@ -58,14 +58,14 @@ public class ArenaCommand extends Command {
         }
     }
 
-    private void runSetLobbyCommand(Player player, String[] args) {
+    private void runSetLobbyCommand(MurderMystery plugin, Player player, String[] args) {
         Arena arena = ArenaManager.getArenaManager().getSetup().get(player.getUniqueId());
         Location location = player.getLocation();
         arena.setLobbyLocation(location);
         player.sendMessage(Utils.format("&aSuccessfully set the lobby for this arena"));
     }
 
-    private void runSpawnCommand(Player player, String[] args) {
+    private void runSpawnCommand(MurderMystery plugin, Player player, String[] args) {
         try{
             Arena arena = ArenaManager.getArenaManager().getSetup().get(player.getUniqueId());
             if(args[2].equalsIgnoreCase("player") && args[3].equalsIgnoreCase("add")){
@@ -100,7 +100,7 @@ public class ArenaCommand extends Command {
         }
     }
 
-    private void runMinPlayersCommand(Player player, String[] args) {
+    private void runMinPlayersCommand(MurderMystery plugin, Player player, String[] args) {
         Arena arena = ArenaManager.getArenaManager().getSetup().get(player.getUniqueId());
         try{
             int minPlayers;
@@ -119,7 +119,7 @@ public class ArenaCommand extends Command {
         }
     }
 
-    private void runMaxPlayersCommand(Player player, String[] args) {
+    private void runMaxPlayersCommand(MurderMystery plugin, Player player, String[] args) {
         Arena arena = ArenaManager.getArenaManager().getSetup().get(player.getUniqueId());
         try{
             int maxPlayers;
@@ -138,10 +138,10 @@ public class ArenaCommand extends Command {
         }
     }
 
-    private void runSaveCommand(Player player, String[] args) {
+    private void runSaveCommand(MurderMystery plugin, Player player, String[] args) {
         try {
 
-            if(MurderMystery.getPlugin(MurderMystery.class).getConfig().get("mainLobby") == null){
+            if(plugin.getConfig().get("mainLobby") == null){
                 Utils.errorCommand(player, "The main lobby has not been set!");
                 return;
             }

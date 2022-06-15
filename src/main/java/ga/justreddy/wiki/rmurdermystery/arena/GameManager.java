@@ -15,13 +15,16 @@ public class GameManager {
             case LOBBY:
                 arena.setSignState(SignState.WAITING);
                 SignUtil.getSignUtil().update(arena.getName());
+                break;
             case PLAYING:
                 if(arena.getWaitingTask() != null) arena.getWaitingTask().cancel();
                 arena.setSignState(SignState.PLAYING);
                 SignUtil.getSignUtil().update(arena.getName());
+                break;
             case WAITING:
                 arena.setSignState(SignState.STARTING);
                 SignUtil.getSignUtil().update(arena.getName());
+                break;
             case ENDING:
                 arena.endingTask = new EndingTask(arena);
                 arena.endingTask.runTaskTimer(MurderMystery.getPlugin(MurderMystery.class), 0, 20L);

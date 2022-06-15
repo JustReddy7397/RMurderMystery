@@ -1,0 +1,22 @@
+# DO NOT TOUCH THIS
+config-version: 1
+
+chat:
+  enabled: true
+  # PlaceholderAPI support!
+  format: "%player%: %message%"
+
+sign:
+  text:
+    waiting: "&aWaiting"
+    starting: "&6Starting"
+    playing: "&cPlaying"
+    ending: "&7Ending"
+    restarting: "&9Restarting"
+  block:
+    enabled: true
+    waiting: GREEN_TERRACOTTA
+    starting: ORANGE_TERRACOTTA
+    playing: RED_TERRACOTTA
+    ending: GRAY_TERRACOTTA
+    restarting: BLUE_TERRACOTTA

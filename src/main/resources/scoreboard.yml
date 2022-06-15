@@ -21,7 +21,7 @@ lobby:
     - "&7%date%"
     - ""
     - "&fPlayed: &a%RMurderMystery_gamesplayed%"
-    - "&fWon: &a%RMurderMystery_gameswon%"
+    - "&fWon: &a%RMurderMystery_gameswon_total%"
     - ""
     - "&eplay.yourmom.sexy"
 game:

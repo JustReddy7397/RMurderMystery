@@ -51,8 +51,18 @@ public class ArenaManager {
     }
 
     public void joinArena(GamePlayer gamePlayer, Arena arena) {
+
+        if(arena == null) {
+            Utils.errorCommand(gamePlayer.getPlayer(), "An arena with this name doesn't exist");
+            return;
+        }
+
         if (arena.getPlayers().size() >= arena.getMaxPlayers()) {
             Utils.errorCommand(gamePlayer.getPlayer(), "This game is full");
+            return;
+        }
+        if (isInGame(gamePlayer, arena.getName())) {
+            Utils.errorCommand(gamePlayer.getPlayer(), "You are already in a game");
             return;
         }
 
@@ -61,10 +71,7 @@ public class ArenaManager {
             return;
         }
 
-        if (isInGame(gamePlayer, arena.getName())) {
-            Utils.errorCommand(gamePlayer.getPlayer(), "You are already in a game");
-            return;
-        }
+
         arena.getPlayers().add(gamePlayer);
         arena.getPlayersAlive().add(gamePlayer);
         arena.getNoRoles().add(gamePlayer);
@@ -74,7 +81,7 @@ public class ArenaManager {
         if (arena.getPlayers().size() >= arena.getMinPlayers() && arena.getGameState() == GameState.LOBBY) {
             arena.waitingTask = new WaitingTask(arena);
             arena.getWaitingTask().runTaskTimer(MurderMystery.getPlugin(MurderMystery.class), 0, 20L);
-            arena.setGameState(GameState.WAITING);
+            arena.getGameManager().setGameState(arena, GameState.WAITING);
         }
         gamePlayer.getPlayer().getInventory().clear();
         gamePlayer.getPlayer().setFoodLevel(20);
@@ -101,7 +108,7 @@ public class ArenaManager {
         if (arena.getPlayers().size() < arena.getMinPlayers() && arena.getGameState() == GameState.WAITING) {
             if (arena.getWaitingTask() != null) {
                 arena.getWaitingTask().cancel();
-                arena.setGameState(GameState.LOBBY);
+                arena.getGameManager().setGameState(arena, GameState.LOBBY);
             }
         }
         gamePlayer.getPlayer().setGameMode(GameMode.SURVIVAL);

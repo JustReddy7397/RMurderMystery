@@ -36,7 +36,7 @@ public class PlayerData {
         }
     }
 
-    public int getGamesPlayed(){
+    public Integer getGamesPlayed(){
         if(plugin.isMongoConnected()){
             Document document = plugin.getMongoBuilder().getDatabase("stats").find(new Document("UUID", gamePlayer.getUuid())).first();
             if(document != null){
@@ -55,7 +55,7 @@ public class PlayerData {
         }
     }
 
-    public int getGamesWonMurderer(){
+    public Integer getGamesWonMurderer(){
         if(plugin.isMongoConnected()){
             Document document = plugin.getMongoBuilder().getDatabase("stats").find(new Document("UUID", gamePlayer.getUuid())).first();
             if(document != null){
@@ -74,7 +74,7 @@ public class PlayerData {
         }
     }
 
-    public int getGamesWonDetective(){
+    public Integer getGamesWonDetective(){
         if(plugin.isMongoConnected()){
             Document document = plugin.getMongoBuilder().getDatabase("stats").find(new Document("UUID", gamePlayer.getUuid())).first();
             if(document != null){
@@ -93,7 +93,7 @@ public class PlayerData {
         }
     }
 
-    public int getGamesWonInnocent(){
+    public Integer getGamesWonInnocent(){
         if(plugin.isMongoConnected()){
             Document document = plugin.getMongoBuilder().getDatabase("stats").find(new Document("UUID", gamePlayer.getUuid())).first();
             if(document != null){
@@ -112,7 +112,7 @@ public class PlayerData {
         }
     }
 
-    public int getPlayersKilledMurderer(){
+    public Integer getPlayersKilledMurderer(){
         if(plugin.isMongoConnected()){
             Document document = plugin.getMongoBuilder().getDatabase("stats").find(new Document("UUID", gamePlayer.getUuid())).first();
             if(document != null){
@@ -122,7 +122,7 @@ public class PlayerData {
         return 0;
     }
 
-    public int getPlayersKilledDetective(){
+    public Integer getPlayersKilledDetective(){
         if(plugin.isMongoConnected()){
             Document document = plugin.getMongoBuilder().getDatabase("stats").find(new Document("UUID", gamePlayer.getUuid())).first();
             if(document != null){
@@ -142,15 +142,15 @@ public class PlayerData {
         return 0;
     }
 
-    public int getPlayersKilledTotal(){
+    public Integer getPlayersKilledTotal(){
         return (getPlayersKilledMurderer() + getPlayersKilledInnocent() + getPlayersKilledDetective());
     }
 
-    public int getGamesWonTotal() {
+    public Integer getGamesWonTotal() {
         return (getGamesWonDetective() + getGamesWonInnocent() + getGamesWonMurderer());
     }
 
-    public int getKnifeSkin(){
+    public Integer getKnifeSkin(){
         if(plugin.isMongoConnected()){
             Document document = plugin.getMongoBuilder().getDatabase("stats").find(new Document("UUID", gamePlayer.getUuid())).first();
             if(document != null){
@@ -170,7 +170,7 @@ public class PlayerData {
     }
 
 
-    public int getVictoryDance(){
+    public Integer getVictoryDance(){
         if(plugin.isMongoConnected()){
             Document document = plugin.getMongoBuilder().getDatabase("stats").find(new Document("UUID", gamePlayer.getUuid())).first();
             if(document != null){
@@ -189,4 +189,22 @@ public class PlayerData {
         }
     }
 
+    public void setLastWords(int id){
+        if(plugin.isMongoConnected()){
+            Document document = plugin.getMongoBuilder().getDatabase("stats").find(new Document("UUID", gamePlayer.getUuid())).first();
+            if(document != null){
+                plugin.getMongoBuilder().getDatabase("stats").updateOne(Filters.eq("UUID", gamePlayer.getUuid()), Updates.set("lastwords", id));
+            }
+        }
+    }
+
+    public Integer getLastWords() {
+        if(plugin.isMongoConnected()){
+            Document document = plugin.getMongoBuilder().getDatabase("stats").find(new Document("UUID", gamePlayer.getUuid())).first();
+            if(document != null){
+                return document.getInteger("lastwords");
+            }
+        }
+        return 0;
+    }
 }

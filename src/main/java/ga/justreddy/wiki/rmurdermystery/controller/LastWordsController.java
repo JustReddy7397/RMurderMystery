@@ -1,5 +1,6 @@
 package ga.justreddy.wiki.rmurdermystery.controller;
 
+import com.cryptomorin.xseries.XMaterial;
 import ga.justreddy.wiki.rmurdermystery.arena.player.GamePlayer;
 import ga.justreddy.wiki.rmurdermystery.cosmetics.LastWords;
 

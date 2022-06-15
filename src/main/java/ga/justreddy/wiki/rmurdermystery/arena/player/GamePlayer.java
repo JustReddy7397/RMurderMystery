@@ -33,7 +33,7 @@ public class GamePlayer  {
     private ItemStack[] savedInventoryContents;
     private ItemStack[] savedArmorContents;
     private Arena arena;
-    private PlayerData playerData;
+    private final PlayerData playerData;
     private PlayerType playerType;
     private final PlayerCosmetics playerCosmetics;
     private boolean dead;
@@ -43,9 +43,9 @@ public class GamePlayer  {
         this.uuid = uuid;
         this.player = Bukkit.getPlayer(uuid);
         this.name = this.player.getName();
-        this.playerCosmetics = new PlayerCosmetics(this);
         this.playerData = new PlayerData(this);
         this.playerData.createPlayer();
+        this.playerCosmetics = new PlayerCosmetics(this);
         this.playerCosmetics.setKnifeSkinSelect(this.getPlayerData().getKnifeSkin());
         this.playerCosmetics.setVictoryDanceSelect(this.getPlayerData().getVictoryDance());
     }

@@ -30,25 +30,19 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.entity.*;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Map;
 import java.util.Random;
-import java.util.function.Predicate;
 
 public class EventManager implements Listener {
 
@@ -67,7 +61,6 @@ public class EventManager implements Listener {
                 }
             }
         }
-
     }
 
     @EventHandler
@@ -178,7 +171,8 @@ public class EventManager implements Listener {
                 if (arena.getGamePlayerType().get(gamePlayer) == PlayerType.DETECTIVE) {
                     Utils.sendMessage(gamePlayer.getPlayer(), "&aYou'll get another arrow in 10 seconds!");
                     Bukkit.getScheduler().runTaskLater(MurderMystery.getPlugin(MurderMystery.class), () -> {
-                        gamePlayer.setItem(9, XMaterial.ARROW.parseItem() );
+                        gamePlayer.setItem(9, XMaterial.ARROW.parseItem());
+                        gamePlayer.getPlayer().playSound(gamePlayer.getLocation(), XSound.ENTITY_ITEM_PICKUP.parseSound(), 1L, 1L);
                     }, 10 * 20);
                 }
             }
@@ -201,16 +195,13 @@ public class EventManager implements Listener {
     @EventHandler
     public void onChat(AsyncPlayerChatEvent e) {
         Player p = e.getPlayer();
-
         for (Arena arena : ArenaManager.getArenaManager().getArenas()) {
             if (arena.getPlayersAlive().contains(PlayerController.getPlayerController().get(p.getUniqueId()))) {
                 arena.sendMessage(PlayerController.getPlayerController().get(p.getUniqueId()).getName() + ": " + e.getMessage());
                 e.setCancelled(true);
             }
         }
-
     }
-
     @EventHandler
     public void onPlayerKillEvent(EntityDamageByEntityEvent e) {
         if (e.getDamager() instanceof Player && e.getEntity() instanceof Player) {
@@ -218,6 +209,10 @@ public class EventManager implements Listener {
             Player damager = (Player) e.getDamager();
             GamePlayer gamePlayer = PlayerController.getPlayerController().get(player.getUniqueId());
             GamePlayer gamePlayer1 = PlayerController.getPlayerController().get(damager.getUniqueId());
+            if ((gamePlayer.getLocation().getWorld().getName().equals(MurderMystery.getPlugin(MurderMystery.class).getConfig().getString("mainLobby.world"))
+            && gamePlayer1.getLocation().getWorld().getName().equals(MurderMystery.getPlugin(MurderMystery.class).getConfig().getString("mainLobby.world")))){
+                e.setCancelled(true);
+            }
             for (Arena arena : ArenaManager.getArenaManager().getArenas()) {
                 if (arena.getPlayers().contains(gamePlayer1) && arena.getPlayers().contains(gamePlayer)) {
                     e.setCancelled(true);
@@ -250,7 +245,10 @@ public class EventManager implements Listener {
             Player damager = (Player) ((Arrow) e.getDamager()).getShooter();
             GamePlayer gamePlayer = PlayerController.getPlayerController().get(player.getUniqueId());
             GamePlayer gamePlayer1 = PlayerController.getPlayerController().get(damager.getUniqueId());
-
+            if ((gamePlayer.getLocation().getWorld().getName().equals(MurderMystery.getPlugin(MurderMystery.class).getConfig().getString("mainLobby.world"))
+                    && gamePlayer1.getLocation().getWorld().getName().equals(MurderMystery.getPlugin(MurderMystery.class).getConfig().getString("mainLobby.world")))){
+                e.setCancelled(true);
+            }
             for (Arena arena : ArenaManager.getArenaManager().getArenas()) {
                 if (arena.getPlayers().contains(gamePlayer) && arena.getPlayers().contains(gamePlayer1)) {
                     e.setCancelled(true);
@@ -351,5 +349,50 @@ public class EventManager implements Listener {
             e.setCancelled(true);
         }
     }
+
+    @EventHandler
+    public void onFallDamage(EntityDamageEvent e) {
+        if(e.getEntity() instanceof Player) {
+            Player player = (Player) e.getEntity();
+            GamePlayer gamePlayer = PlayerController.getPlayerController().get(player.getUniqueId());
+            if (gamePlayer.getLocation().getWorld().getName().equals(MurderMystery.getPlugin(MurderMystery.class).getConfig().getString("mainLobby.world"))) {
+                e.setCancelled(true);
+            }
+            for (Arena arena : ArenaManager.getArenaManager().getArenas()) {
+                if(arena.getPlayers().contains(gamePlayer)) e.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerItemDrop(PlayerDropItemEvent e) {
+        System.out.println(e.getPlayer().getWorld().getName().equals(MurderMystery.getPlugin(MurderMystery.class).getConfig().getString("mainLobby.world")));
+        if (e.getPlayer().getWorld().getName().equals(MurderMystery.getPlugin(MurderMystery.class).getConfig().getString("mainLobby.world"))) {
+            e.setCancelled(true);
+        }
+        for (Arena arena : ArenaManager.getArenaManager().getArenas()) {
+            if (arena.getPlayers().contains(PlayerController.getPlayerController().get(e.getPlayer().getUniqueId()))) e.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerItemPickup(PlayerPickupItemEvent e) {
+        if (e.getPlayer().getWorld().getName().equals(MurderMystery.getPlugin(MurderMystery.class).getConfig().getString("mainLobby.world"))) {
+            e.setCancelled(true);
+        }
+        for (Arena arena : ArenaManager.getArenaManager().getArenas()) {
+            if (arena.getPlayers().contains(PlayerController.getPlayerController().get(e.getPlayer().getUniqueId()))) {
+                if (e.getItem().getItemStack().getType() == XMaterial.GOLD_INGOT.parseMaterial()){
+                    if (e.getPlayer().getInventory().getItem(8).getAmount() == 10) {
+                        e.getPlayer().getInventory().addItem(XMaterial.BOW.parseItem());
+                        e.getPlayer().getInventory().setItem(9, XMaterial.ARROW.parseItem());
+                    }else {
+                        e.getPlayer().getInventory().setItem(8, e.getItem().getItemStack());
+                    }
+                }
+            }
+        }
+    }
+
 
 }

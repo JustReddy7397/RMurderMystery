@@ -4,7 +4,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.*;
 
-public class DatabaseManager {
+public class DatabaseBuilder {
 
     private Connection con;
 

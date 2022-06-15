@@ -5,7 +5,7 @@ import ga.justreddy.wiki.rmurdermystery.arena.ArenaManager;
 import ga.justreddy.wiki.rmurdermystery.arena.events.EventManager;
 import ga.justreddy.wiki.rmurdermystery.arena.player.GamePlayer;
 import ga.justreddy.wiki.rmurdermystery.arena.player.PlayerController;
-import ga.justreddy.wiki.rmurdermystery.builder.DatabaseManager;
+import ga.justreddy.wiki.rmurdermystery.builder.DatabaseBuilder;
 import ga.justreddy.wiki.rmurdermystery.builder.MongoBuilder;
 import ga.justreddy.wiki.rmurdermystery.builder.SignBuilder;
 import ga.justreddy.wiki.rmurdermystery.commands.CommandBase;
@@ -30,7 +30,6 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
@@ -44,34 +43,54 @@ import java.util.Map;
 
 public final class MurderMystery extends DependentJavaPlugin implements Listener {
 
-    @Getter private CommandBase commandBase;
+    @Getter
+    private CommandBase commandBase;
 
     public static boolean PAPI = false;
-    @Getter private ActionManager actionManager;
-    @Getter private MenuManager menuManager;
-    @Getter private DatabaseManager databaseManager = null;
-    @Getter private MongoBuilder mongoBuilder = null;
+    @Getter
+    private ActionManager actionManager;
+    @Getter
+    private MenuManager menuManager;
+    @Getter
+    private DatabaseBuilder databaseBuilder = null;
+    @Getter
+    private MongoBuilder mongoBuilder = null;
     // Scoreboard
-    @Getter private Assemble lobbyBoard;
-    @Getter private final Map<GamePlayer, AssembleBoard> lobbyBoardMap = new HashMap<>();
-    @Getter private boolean mongoConnected = false;
-    @Getter private CorpsePool pool;
+    @Getter
+    private Assemble lobbyBoard;
+    @Getter
+    private final Map<GamePlayer, AssembleBoard> lobbyBoardMap = new HashMap<>();
+    @Getter
+    private boolean mongoConnected = false;
+    @Getter
+    private CorpsePool pool;
     private final File file = new File("plugins/RMurderMystery/libs/");
 
     // Config
-    @Getter private YamlConfig arenaListConfig;
-    @Getter private YamlConfig knifeSkinsConfig;
-    @Getter private YamlConfig selectMenuConfig;
-    @Getter private YamlConfig statsMenuConfig;
-    @Getter private YamlConfig scoreboardConfig;
-    @Getter private YamlConfig databaseConfig;
-    @Getter private YamlConfig hotbarConfig;
-    @Getter private YamlConfig signsConfig;
+    @Getter
+    private YamlConfig arenaListConfig;
+    @Getter
+    private YamlConfig knifeSkinsConfig;
+    @Getter
+    private YamlConfig selectMenuConfig;
+    @Getter
+    private YamlConfig statsMenuConfig;
+    @Getter
+    private YamlConfig scoreboardConfig;
+    @Getter
+    private YamlConfig databaseConfig;
+    @Getter
+    private YamlConfig hotbarConfig;
+    @Getter
+    private YamlConfig signsConfig;
+    @Getter
+    private YamlConfig settingsConfig;
 
     // Config Version
-    private final int SCOREBOARD_VERSION = 1;
-    private final int DATABASE_VERSION = 1;
-    private final int HOTBAR_VERSION = 1;
+    private static final int SCOREBOARD_VERSION = 1;
+    private static final int DATABASE_VERSION = 1;
+    private static final int HOTBAR_VERSION = 1;
+    private static final int SETTINGS_VERSION = 1;
 
     @SneakyThrows
     @Override
@@ -112,12 +131,12 @@ public final class MurderMystery extends DependentJavaPlugin implements Listener
                 mongoConnected = true;
                 break;
             case "sql":
-                databaseManager = new DatabaseManager();
-                databaseManager.connectH2(this, "data/database");
+                databaseBuilder = new DatabaseBuilder();
+                databaseBuilder.connectH2(this, "data/database");
                 break;
             case "mysql":
-                databaseManager = new DatabaseManager();
-                databaseManager.connectMysQL(
+                databaseBuilder = new DatabaseBuilder();
+                databaseBuilder.connectMysQL(
                         getDatabaseConfig().getConfig().getString("mysql.database"),
                         getDatabaseConfig().getConfig().getString("mysql.user"),
                         getDatabaseConfig().getConfig().getString("mysql.password"),
@@ -134,21 +153,20 @@ public final class MurderMystery extends DependentJavaPlugin implements Listener
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        getLobbyBoardMap().clear();
         ArenaFile.cleanUp();
-        Bukkit.getScoreboardManager().getMainScoreboard().getTeams().clear();
         PlayerController.getPlayerController().shutDown();
         ArenaManager.getArenaManager().getSetup().clear();
         ArenaManager.getArenaManager().getArenas().clear();
         KnifeSkinsController.getKnifeSkinsController().shutDown();
         VictoryDancesController.getVictoryDancesController().shutDown();
-        menuManager.onDisable();
+        getMenuManager().onDisable();
         SignUtil.getSignUtil().updateAll();
         Bukkit.getScheduler().cancelTasks(this);
         for (Player player : Bukkit.getOnlinePlayers()) {
             getLobbyBoardMap().remove(PlayerController.getPlayerController().remove(player.getUniqueId()));
 
         }
-        getLobbyBoardMap().clear();
         BukkitTask task = pool.getTickTask();
         if (task != null) {
             task.cancel();
@@ -163,7 +181,7 @@ public final class MurderMystery extends DependentJavaPlugin implements Listener
 
         String currentlyLoading = "configuration file";
 
-        try{
+        try {
             currentlyLoading = "arena_list.yml";
             arenaListConfig = new YamlConfig("data/" + currentlyLoading);
             currentlyLoading = "knifeskins.yml";
@@ -174,13 +192,13 @@ public final class MurderMystery extends DependentJavaPlugin implements Listener
             statsMenuConfig = new YamlConfig("menus/" + currentlyLoading);
             currentlyLoading = "scoreboard.yml";
             scoreboardConfig = new YamlConfig(currentlyLoading);
-            if(scoreboardConfig.isOutdated(SCOREBOARD_VERSION)) {
+            if (scoreboardConfig.isOutdated(SCOREBOARD_VERSION)) {
                 Utils.error(null, "Outdated scoreboard.yml file.", true);
                 return false;
             }
             currentlyLoading = "database.yml";
             databaseConfig = new YamlConfig(currentlyLoading);
-            if(databaseConfig.isOutdated(DATABASE_VERSION)) {
+            if (databaseConfig.isOutdated(DATABASE_VERSION)) {
                 Utils.error(null, "Outdated database.yml file.", true);
                 return false;
             }
@@ -192,7 +210,15 @@ public final class MurderMystery extends DependentJavaPlugin implements Listener
             }
             currentlyLoading = "signs.yml";
             signsConfig = new YamlConfig("data/" + currentlyLoading);
-        }catch (IOException | InvalidConfigurationException ex) {
+
+            currentlyLoading = "settings.yml";
+            settingsConfig = new YamlConfig(currentlyLoading);
+            if (settingsConfig.isOutdated(SETTINGS_VERSION)) {
+                Utils.error(null, "Outdated settings.yml file.", true);
+                return false;
+            }
+
+        } catch (IOException | InvalidConfigurationException ex) {
             Utils.error(ex, "Failed to load config: " + currentlyLoading, true);
             return false;
         }

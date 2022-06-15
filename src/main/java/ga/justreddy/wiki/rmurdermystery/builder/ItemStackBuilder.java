@@ -40,9 +40,9 @@ public class ItemStackBuilder {
             builder.setSkullOwner(section.getString("username").replace("%player%", player.getName()));
         }
 
-        if (section.contains("display_name")) {
-            if (player != null) builder.withName(section.getString("display_name"), player);
-            else builder.withName(section.getString("display_name"));
+        if (section.contains("displayname")) {
+            if (player != null) builder.withName(section.getString("displa_name"), player);
+            else builder.withName(section.getString("displayname"));
         }
 
         if (section.contains("lore")) {

@@ -1,11 +1,13 @@
 package ga.justreddy.wiki.rmurdermystery.utils;
 
+import com.cryptomorin.xseries.XMaterial;
 import ga.justreddy.wiki.rmurdermystery.MurderMystery;
 import ga.justreddy.wiki.rmurdermystery.arena.Arena;
 import ga.justreddy.wiki.rmurdermystery.arena.ArenaManager;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -111,11 +113,31 @@ public class SignUtil {
                     sign.setLine(2, arena.getSignState().getIdentifier());
                     sign.setLine(3, playerCount + "/" + maxPlayers);
                     sign.update(true);
+                    if (MurderMystery.getPlugin(MurderMystery.class).getSettingsConfig().getConfig().getBoolean("sign.block.enabled")) {
+                        Block attachedBlock = getBlockSignAttachedTo(block);
+                        if(attachedBlock == null) return;
+                        attachedBlock.setType(arena.getSignState().getBehindBlock().parseMaterial());
+                    }
                 }
             }
 
 
         }
+    }
+
+    private Block getBlockSignAttachedTo(Block block) {
+        if (block.getType() == XMaterial.OAK_WALL_SIGN.parseMaterial())
+            switch (block.getData()) {
+                case 2:
+                    return block.getRelative(BlockFace.SOUTH);
+                case 3:
+                    return block.getRelative(BlockFace.NORTH);
+                case 4:
+                    return block.getRelative(BlockFace.EAST);
+                case 5:
+                    return block.getRelative(BlockFace.WEST);
+            }
+        return null;
     }
 
     public static SignUtil getSignUtil() {

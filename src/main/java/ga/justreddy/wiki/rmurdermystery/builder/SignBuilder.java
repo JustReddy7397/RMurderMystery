@@ -1,6 +1,8 @@
 package ga.justreddy.wiki.rmurdermystery.builder;
 
 import com.cryptomorin.xseries.XMaterial;
+import ga.justreddy.wiki.rmurdermystery.MurderMystery;
+import ga.justreddy.wiki.rmurdermystery.arena.enums.SignState;
 import ga.justreddy.wiki.rmurdermystery.utils.SignUtil;
 import ga.justreddy.wiki.rmurdermystery.arena.Arena;
 import ga.justreddy.wiki.rmurdermystery.arena.ArenaManager;
@@ -10,6 +12,7 @@ import ga.justreddy.wiki.rmurdermystery.arena.player.PlayerController;
 import ga.justreddy.wiki.rmurdermystery.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,12 +24,13 @@ import org.bukkit.event.player.PlayerInteractEvent;
 public class SignBuilder implements Listener {
 
     @EventHandler
-    public void onSignChange(SignChangeEvent e){
+    public void onSignChange(SignChangeEvent e) {
 
         Player p = e.getPlayer();
         Block b = e.getBlock();
 
-        if(p.hasPermission("mm.sign.create")){
+
+        if (p.hasPermission("mm.sign.create")) {
             String firstLine = e.getLine(0);
             String secondLine = e.getLine(1);
             String thirdLine = e.getLine(2);
@@ -45,13 +49,17 @@ public class SignBuilder implements Listener {
                 p.sendMessage(Utils.format("&aSuccessfully placed the sign"));
                 SignUtil signutil = new SignUtil(b.getX(), b.getY(), b.getZ(), b.getWorld().getName(), arena.getName());
                 signutil.save();
-
+                if (MurderMystery.getPlugin(MurderMystery.class).getSettingsConfig().getConfig().getBoolean("sign.block.enabled")) {
+                    Block attachedBlock = getBlockSignAttachedTo(b);
+                    if (attachedBlock == null) return;
+                    attachedBlock.setType(SignState.WAITING.getBehindBlock().parseMaterial());
+                }
             }
         }
     }
 
     @EventHandler
-    public void onSignClick(PlayerInteractEvent e){
+    public void onSignClick(PlayerInteractEvent e) {
         Player p = e.getPlayer();
         Block b = e.getClickedBlock();
         if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
@@ -61,17 +69,6 @@ public class SignBuilder implements Listener {
             String finalArenaName = arenaName.replace("Map: ", "");
             Arena arena = ArenaManager.getArenaManager().getArena(finalArenaName);
             if (arena == null) return;
-            if (arena.getPlayers().size() == arena.getMaxPlayers()) {
-                p.sendMessage(Utils.format("&cThis arena is full"));
-                return;
-            }
-
-            if (!(arena.getGameState().equals(GameState.LOBBY) || (arena.getGameState() != GameState.WAITING))) {
-                p.sendMessage(Utils.format("&cThis game has already started"));
-                return;
-            }
-
-
             if (sign.getLine(0).equalsIgnoreCase(Utils.format("&7[&bMurderMystery&7]"))) {
                 if (sign.getLine(1).equalsIgnoreCase(sign.getLine(1))) {
                     GamePlayer gamePlayer = PlayerController.getPlayerController().get(p.getUniqueId());
@@ -81,5 +78,18 @@ public class SignBuilder implements Listener {
         }
     }
 
-
+    private Block getBlockSignAttachedTo(Block block) {
+        if (block.getType() == XMaterial.OAK_WALL_SIGN.parseMaterial())
+            switch (block.getData()) {
+                case 2:
+                    return block.getRelative(BlockFace.SOUTH);
+                case 3:
+                    return block.getRelative(BlockFace.NORTH);
+                case 4:
+                    return block.getRelative(BlockFace.EAST);
+                case 5:
+                    return block.getRelative(BlockFace.WEST);
+            }
+        return null;
+    }
 }

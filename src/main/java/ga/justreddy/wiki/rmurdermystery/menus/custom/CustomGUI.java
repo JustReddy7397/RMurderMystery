@@ -40,8 +40,6 @@ public class CustomGUI extends AbstractInventory {
                     inventoryItem = new InventoryItem(builder.build()).addClickAction(p -> getPlugin().getActionManager().executeActions(p, config.getStringList("items." + entry + ".actions")));
                 }
 
-                if (config.contains(getEntry(entry, "displayname"))) builder.withName(config.getString(getEntry(entry, "displayname")));
-
                 if (config.contains("items." + entry + ".slots")) {
                     for (String slot : config.getStringList("items." + entry + ".slots")) {
                         inventoryBuilder.setItem(Integer.parseInt(slot), inventoryItem);
@@ -57,6 +55,7 @@ public class CustomGUI extends AbstractInventory {
 
             } catch (Exception e) {
                 e.printStackTrace();
+                e.getCause();
                 getPlugin().getLogger().warning("There was an error loading GUI item ID '" + entry + "', skipping..");
             }
         }
